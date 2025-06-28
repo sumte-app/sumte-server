@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 import com.sumte.guesthouse.entity.Guesthouse;
 import com.sumte.jpa.BaseTimeEntity;
+import com.sumte.room.dto.RoomRequestDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,4 +36,21 @@ public class Room extends BaseTimeEntity {
 	private Long standardCount;
 	private Long totalCount;
 	private String imageUrl;
+
+	public static Room createRoomEntity(RoomRequestDTO.Register dto) {
+		Room room = new Room();
+		room.name = dto.getName();
+		room.contents = dto.getContent();
+		room.price = dto.getPrice();
+		room.checkin = dto.getCheckin();
+		room.checkout = dto.getCheckout();
+		room.standardCount = dto.getStandartCount();
+		room.totalCount = dto.getTotalCount();
+		room.imageUrl = dto.getImageUrl();
+		return room;
+	}
+
+	public void setGuesthouse(Guesthouse guesthouse) {
+		this.guesthouse = guesthouse;
+	}
 }

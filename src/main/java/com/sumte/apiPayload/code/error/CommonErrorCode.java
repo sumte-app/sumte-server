@@ -22,6 +22,9 @@ public enum CommonErrorCode implements ErrorCode {
 	DUPLICATE_DATA(HttpStatus.BAD_REQUEST, "GUESTHOUSE401", "중복된 게스트하우스 입니다."),
 	NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE402", "존재하지 않는 게스트하우스 입니다."),
 
+	// ROOM4XX
+	ALREADY_EXIST(HttpStatus.BAD_REQUEST, "ROOM401", "이미 같은 방이 존재합니다."),
+
 	// COMMON 5XX
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다.");
 
