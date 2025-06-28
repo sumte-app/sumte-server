@@ -37,8 +37,9 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	}
 
 	@Override
-	public GuesthouseResponseDTO.delete deleteGuesthouse(GuesthouseRequestDTO.delete dto) {
-		Guesthouse guesthouse = guesthouseRepository.findByNameAndAddressDetail(dto.getName(), dto.getAddressDetail());
+	public GuesthouseResponseDTO.delete deleteGuesthouse(Long guesthouseId) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId).orElse(null);
+
 		if (guesthouse == null) {
 			throw new SumteException(CommonErrorCode.NOT_EXIST);
 		} else {
@@ -48,6 +49,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 				.addressDetail(guesthouse.getAddressDetail())
 				.build();
 		}
+
 	}
 
 }
