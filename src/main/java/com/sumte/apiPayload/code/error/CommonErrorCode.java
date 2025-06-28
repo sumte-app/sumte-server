@@ -18,6 +18,10 @@ public enum CommonErrorCode implements ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404", "사용자를 찾을 수 없습니다"),
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON405", "허용되지 않는 HTTP Method입니다."),
 
+	// GUESTHOUSE4XX
+	DUPLICATE_DATA(HttpStatus.BAD_REQUEST, "GUESTHOUSE401", "중복된 게스트하우스 입니다."),
+	NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE402", "존재하지 않는 게스트하우스 입니다."),
+
 	// COMMON 5XX
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다.");
 
