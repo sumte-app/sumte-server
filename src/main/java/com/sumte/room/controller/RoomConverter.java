@@ -24,4 +24,11 @@ public class RoomConverter {
 			.roomId(room.getId())
 			.build();
 	}
+
+	public RoomResponseDTO.Delete toDeleteEntity(Room room) {
+		return RoomResponseDTO.Delete.builder()
+			.name(room.getName())
+			.build();
+	}
+
 }

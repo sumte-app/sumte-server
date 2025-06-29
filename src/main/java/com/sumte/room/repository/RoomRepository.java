@@ -8,4 +8,6 @@ import com.sumte.room.entity.Room;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 	Optional<Room> findRoomByGuesthouseIdAndName(Long guesthouseId, String name);
+
+	Optional<Room> findById(Long roomId);
 }

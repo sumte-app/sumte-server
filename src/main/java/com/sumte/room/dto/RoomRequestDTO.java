@@ -36,4 +36,5 @@ public class RoomRequestDTO {
 		String imageUrl;
 
 	}
+
 }

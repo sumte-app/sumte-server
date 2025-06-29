@@ -24,6 +24,7 @@ public enum CommonErrorCode implements ErrorCode {
 
 	// ROOM4XX
 	ALREADY_EXIST(HttpStatus.BAD_REQUEST, "ROOM401", "이미 같은 방이 존재합니다."),
+	NOT_EXIST_ROOM(HttpStatus.BAD_REQUEST, "ROOM402", "존재하지 않는 방입니다."),
 
 	// COMMON 5XX
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다.");

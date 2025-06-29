@@ -40,4 +40,14 @@ public class RoomCommandServiceImpl implements RoomCommandService {
 		RoomResponseDTO.Register result = roomConverter.toRegisterDTO(registerRoom);
 		return result;
 	}
+
+	@Override
+	public RoomResponseDTO.Delete deleteRoom(Long roomId, Long guesthouseId) {
+		Room room = roomRepository.findById(roomId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+
+		roomRepository.delete(room);
+
+		return roomConverter.toDeleteEntity(room);
+	}
 }

@@ -15,4 +15,12 @@ public class RoomResponseDTO {
 		String name;
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Delete {
+		String name;
+	}
+
 }
