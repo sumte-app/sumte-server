@@ -9,6 +9,8 @@ import com.sumte.reservation.entity.ReservationStatus;
 import com.sumte.room.entity.Room;
 import com.sumte.user.entity.User;
 
+import java.time.temporal.ChronoUnit;
+
 @Component
 public class ReservationConverter {
 
@@ -28,5 +30,22 @@ public class ReservationConverter {
 		return ReservationResponseDTO.CreateReservationDTO.builder()
 			.reservationId(reservation.getId())
 			.build();
+	}
+
+	public ReservationResponseDTO.MyReservationDTO toMyReservationDTO(Reservation reservation) {
+		Room room = reservation.getRoom();
+		int nightCount = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
+
+		return ReservationResponseDTO.MyReservationDTO.builder()
+				.id(reservation.getId())
+				.roomName(room.getName())
+				.imageUrl(room.getImageUrl())
+				.startDate(reservation.getStartDate())
+				.endDate(reservation.getEndDate())
+				.adultCount(reservation.getAdultCount())
+				.childCount(reservation.getChildCount())
+				.nightCount(nightCount)
+				.status(reservation.getReservationStatus().name())
+				.build();
 	}
 }

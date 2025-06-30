@@ -2,6 +2,8 @@ package com.sumte.reservation.service;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sumte.reservation.converter.ReservationConverter;
@@ -51,5 +53,15 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationConverter.toEntity(request,user,room);
 		reservationRepository.save(reservation);
 		return reservationConverter.toCreateResponse(reservation);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(Long userId, Pageable pageable) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
+
+		Page<Reservation> reservations = reservationRepository.findAllByUser(user, pageable);
+		return reservations.map(reservationConverter::toMyReservationDTO);
 	}
 }

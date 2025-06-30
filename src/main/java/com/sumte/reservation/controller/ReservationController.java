@@ -1,12 +1,15 @@
 package com.sumte.reservation.controller;
 
+import com.sumte.apiPayload.exception.annotation.CheckPage;
+import com.sumte.apiPayload.exception.annotation.CheckPageSize;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import com.sumte.reservation.dto.ReservationRequestDTO;
 import com.sumte.reservation.dto.ReservationResponseDTO;
@@ -16,9 +19,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
+@Validated
 @Tag(name = "Reservation", description = "예약 관련 API (생성, 조회, 수정, 삭제 등)")
 public class ReservationController {
 
@@ -29,9 +35,21 @@ public class ReservationController {
 	public ReservationResponseDTO.CreateReservationDTO createReservation(
 		@Parameter(description = "요청한 사용자 ID") // 로그인 로직이 구현이 안되어 임시로 헤더로 해결
 		@RequestHeader("userId") Long userId,
-		@Parameter(description = "예약 생성 요청 DTO", required = true)
 		@Valid @RequestBody ReservationRequestDTO.CreateReservationDTO request
 	) {
 		return reservationService.createReservation(request, userId);
 	}
+
+	@GetMapping("/my")
+	@Operation(summary = "내 예약 목록 조회 API", description = "내가 예약한 숙소 목록을 페이지 단위로 조회합니다.")
+	public Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(
+			@Parameter(description = "요청한 사용자 ID")
+			@RequestHeader("userId") Long userId,
+			@CheckPage @RequestParam(name = "page", defaultValue = "1") int page,
+			@CheckPageSize @RequestParam(name = "size", defaultValue = "10") int size
+	) {
+		Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "startDate"));
+		return reservationService.getMyReservations(userId, pageable);
+	}
+
 }
