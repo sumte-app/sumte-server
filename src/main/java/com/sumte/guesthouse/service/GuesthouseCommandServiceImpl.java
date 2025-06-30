@@ -1,5 +1,7 @@
 package com.sumte.guesthouse.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
@@ -18,6 +20,7 @@ import com.sumte.guesthouse.repository.GuesthouseTargetAudienceRepository;
 import com.sumte.guesthouse.repository.OptionServicesRepository;
 import com.sumte.guesthouse.repository.TargetAudienceRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -52,7 +55,6 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 			guesthouseOptionServices.setGuesthouse(guesthouse);
 			guesthouseOptionServices.setOptionServices(optionServices);
 			guesthouseOptionServicesRepository.save(guesthouseOptionServices);
-
 		});
 
 		dto.getTargetAudience().forEach(targetAudience -> {
@@ -72,8 +74,9 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	}
 
 	@Override
-	public GuesthouseResponseDTO.Update updateGuesthouse(Long id, GuesthouseRequestDTO.Update dto) {
-		Guesthouse guesthouse = guesthouseRepository.findById(id)
+	@Transactional
+	public GuesthouseResponseDTO.Update updateGuesthouse(Long guesthouseId, GuesthouseRequestDTO.Update dto) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
 			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
 		if (dto.getName() != null) {
 			guesthouse.setName(dto.getName());
@@ -90,8 +93,41 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 		if (dto.getInformation() != null) {
 			guesthouse.setInformation(dto.getInformation());
 		}
+		if (dto.getOptionServices() != null) {
+			List<String> option = dto.getOptionServices();
 
-		return null;
+			// 일단 뭐가 됐든 현재 있던 속성 삭제하기
+			guesthouseOptionServicesRepository.deleteByGuesthouseId(guesthouseId);
+
+			option.forEach(optionService -> {
+				OptionServices optionServices = optionServicesRepository.findByName(optionService).orElseThrow(
+					() -> new SumteException(CommonErrorCode.OPTIONSERVICE_NOT_EXIST)
+				);
+				GuesthouseOptionServices guesthouseOptionServices = new GuesthouseOptionServices();
+				guesthouseOptionServices.setGuesthouse(guesthouse);
+				guesthouseOptionServices.setOptionServices(optionServices);
+				guesthouseOptionServicesRepository.save(guesthouseOptionServices);
+			});
+		}
+
+		if (dto.getTargetAudience() != null) {
+			List<String> audience = dto.getTargetAudience();
+
+			guesthouseTargetAudienceRepository.deleteByGuesthouseId(guesthouseId);
+
+			audience.forEach(audienceService -> {
+				TargetAudience targetAudience = targetAudienceRepository.findByName(audienceService)
+					.orElseThrow(() -> new SumteException(CommonErrorCode.TARGETAUDIENCE_NOT_EXIST));
+
+				GuesthouseTargetAudience guesthouseTargetAudience = new GuesthouseTargetAudience();
+				guesthouseTargetAudience.setGuesthouse(guesthouse);
+				guesthouseTargetAudience.setTargetAudience(targetAudience);
+				guesthouseTargetAudienceRepository.save(guesthouseTargetAudience);
+
+			});
+		}
+
+		return guesthouseConverter.toUpdateResponseDTO(guesthouse, dto.getOptionServices(), dto.getTargetAudience());
 
 	}
 

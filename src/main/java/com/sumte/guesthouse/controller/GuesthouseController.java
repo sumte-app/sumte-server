@@ -1,6 +1,7 @@
 package com.sumte.guesthouse.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,17 +49,17 @@ public class GuesthouseController {
 
 	}
 
-	// @DeleteMapping("/{guesthouseId}")
-	// @Operation(summary = "게스트하우스 수정", description = "게스트하우스를 수정합니다.")
-	// @Parameters({
-	// 	@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
-	// })
-	// public ApiResponse<GuesthouseResponseDTO.Update> updateGuesthouse(
-	// 	@PathVariable(name = "guesthouseId") Long guesthouseId,
-	// 	@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
-	//
-	// 	return ApiResponse.success();
-	//
-	// }
+	@PatchMapping("/{guesthouseId}")
+	@Operation(summary = "게스트하우스 수정", description = "게스트하우스를 수정합니다.")
+	@Parameters({
+		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
+	})
+	public ApiResponse<GuesthouseResponseDTO.Update> updateGuesthouse(
+		@PathVariable(name = "guesthouseId") Long guesthouseId,
+		@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
+		GuesthouseResponseDTO.Update result = guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
+		return ApiResponse.success(result);
+
+	}
 
 }

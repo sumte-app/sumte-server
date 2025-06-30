@@ -1,5 +1,7 @@
 package com.sumte.guesthouse.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +25,10 @@ public class GuesthouseResponseDTO {
 	public static class Update {
 		String name;
 		String addressRegion;
+		String addressDetail;
+		List<String> optionServices;
+		List<String> targetAudience;
+
 	}
 
 	@Builder
