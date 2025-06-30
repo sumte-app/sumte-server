@@ -8,7 +8,15 @@ import com.sumte.guesthouse.converter.GuesthouseConverter;
 import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
 import com.sumte.guesthouse.entity.Guesthouse;
+import com.sumte.guesthouse.entity.OptionServices;
+import com.sumte.guesthouse.entity.TargetAudience;
+import com.sumte.guesthouse.entity.mapping.GuesthouseOptionServices;
+import com.sumte.guesthouse.entity.mapping.GuesthouseTargetAudience;
+import com.sumte.guesthouse.repository.GuesthouseOptionServicesRepository;
 import com.sumte.guesthouse.repository.GuesthouseRepository;
+import com.sumte.guesthouse.repository.GuesthouseTargetAudienceRepository;
+import com.sumte.guesthouse.repository.OptionServicesRepository;
+import com.sumte.guesthouse.repository.TargetAudienceRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,9 +26,13 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 
 	private final GuesthouseRepository guesthouseRepository;
 	private final GuesthouseConverter guesthouseConverter;
+	private final OptionServicesRepository optionServicesRepository;
+	private final TargetAudienceRepository targetAudienceRepository;
+	private final GuesthouseTargetAudienceRepository guesthouseTargetAudienceRepository;
+	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
 
 	@Override
-	public GuesthouseResponseDTO.register registerGuesthouse(GuesthouseRequestDTO.register dto) {
+	public GuesthouseResponseDTO.register registerGuesthouse(GuesthouseRequestDTO.Register dto) {
 		Guesthouse guesthouse = guesthouseConverter.toRegisterEntity(dto);
 
 		// 중복 데이터인지 검사
@@ -30,6 +42,29 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 		}
 
 		guesthouseRepository.save(guesthouse);
+
+		dto.getOptionServices().forEach(optionService -> {
+			OptionServices optionServices = optionServicesRepository.findByName(optionService).orElseThrow(
+				() -> new SumteException(CommonErrorCode.OPTIONSERVICE_NOT_EXIST)
+			);
+
+			GuesthouseOptionServices guesthouseOptionServices = new GuesthouseOptionServices();
+			guesthouseOptionServices.setGuesthouse(guesthouse);
+			guesthouseOptionServices.setOptionServices(optionServices);
+			guesthouseOptionServicesRepository.save(guesthouseOptionServices);
+
+		});
+
+		dto.getTargetAudience().forEach(targetAudience -> {
+			TargetAudience ta = targetAudienceRepository.findByName(targetAudience)
+				.orElseThrow(() -> new SumteException(CommonErrorCode.TARGETAUDIENCE_NOT_EXIST));
+
+			GuesthouseTargetAudience guesthouseTargetAudience = new GuesthouseTargetAudience();
+			guesthouseTargetAudience.setGuesthouse(guesthouse);
+			guesthouseTargetAudience.setTargetAudience(ta);
+
+			guesthouseTargetAudienceRepository.save(guesthouseTargetAudience);
+		});
 
 		GuesthouseResponseDTO.register result = guesthouseConverter.toRegisterResponseDTO(guesthouse);
 		return result;

@@ -40,7 +40,7 @@ public class Guesthouse extends BaseTimeEntity {
 	@OneToMany(mappedBy = "guesthouse", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Room> rooms = new ArrayList<>();
 
-	public static Guesthouse createByRegisterDTO(GuesthouseRequestDTO.register dto) {
+	public static Guesthouse createByRegisterDTO(GuesthouseRequestDTO.Register dto) {
 		Guesthouse guesthouse = new Guesthouse();
 		guesthouse.name = dto.getName();
 		guesthouse.addressRegion = dto.getAddressRegion();

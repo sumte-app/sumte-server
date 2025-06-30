@@ -1,11 +1,13 @@
 package com.sumte.guesthouse.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 public class GuesthouseRequestDTO {
 	@Getter
-	public static class register {
+	public static class Register {
 
 		@NotBlank(message = "이름은 필수입니다.")
 		String name;
@@ -18,10 +20,14 @@ public class GuesthouseRequestDTO {
 
 		String information;
 		String imageUrl;
+
+		List<String> optionServices;
+		List<String> targetAudience;
+
 	}
 
 	@Getter
-	public static class update {
+	public static class Update {
 
 	}
 

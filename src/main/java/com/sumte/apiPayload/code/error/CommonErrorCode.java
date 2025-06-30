@@ -21,6 +21,8 @@ public enum CommonErrorCode implements ErrorCode {
 	// GUESTHOUSE4XX
 	DUPLICATE_DATA(HttpStatus.BAD_REQUEST, "GUESTHOUSE401", "중복된 게스트하우스 입니다."),
 	NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE402", "존재하지 않는 게스트하우스 입니다."),
+	OPTIONSERVICE_NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE403", "존재하지 않는 부가 서비스 입니다."),
+	TARGETAUDIENCE_NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE404", "존재하지 않는 이용대상 입니다."),
 
 	// ROOM4XX
 	ALREADY_EXIST(HttpStatus.BAD_REQUEST, "ROOM401", "이미 같은 방이 존재합니다."),

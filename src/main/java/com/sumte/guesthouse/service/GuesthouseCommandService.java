@@ -4,7 +4,7 @@ import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
 
 public interface GuesthouseCommandService {
-	GuesthouseResponseDTO.register registerGuesthouse(GuesthouseRequestDTO.register dto);
+	GuesthouseResponseDTO.register registerGuesthouse(GuesthouseRequestDTO.Register dto);
 
 	GuesthouseResponseDTO.delete deleteGuesthouse(Long guesthouseId);
 }

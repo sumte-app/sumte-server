@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class GuesthouseConverter {
-	public Guesthouse toRegisterEntity(GuesthouseRequestDTO.register dto) {
+	public Guesthouse toRegisterEntity(GuesthouseRequestDTO.Register dto) {
 		return Guesthouse.createByRegisterDTO(dto);
 	}
 

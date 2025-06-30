@@ -29,4 +29,12 @@ public class GuesthouseTargetAudience extends BaseTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "target_audience_id")
 	private TargetAudience targetAudience;
+
+	public void setTargetAudience(TargetAudience targetAudience) {
+		this.targetAudience = targetAudience;
+	}
+
+	public void setGuesthouse(Guesthouse guesthouse) {
+		this.guesthouse = guesthouse;
+	}
 }
