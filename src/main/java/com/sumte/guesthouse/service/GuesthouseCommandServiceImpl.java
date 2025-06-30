@@ -32,7 +32,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
 
 	@Override
-	public GuesthouseResponseDTO.register registerGuesthouse(GuesthouseRequestDTO.Register dto) {
+	public GuesthouseResponseDTO.Register registerGuesthouse(GuesthouseRequestDTO.Register dto) {
 		Guesthouse guesthouse = guesthouseConverter.toRegisterEntity(dto);
 
 		// 중복 데이터인지 검사
@@ -66,8 +66,32 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 			guesthouseTargetAudienceRepository.save(guesthouseTargetAudience);
 		});
 
-		GuesthouseResponseDTO.register result = guesthouseConverter.toRegisterResponseDTO(guesthouse);
+		GuesthouseResponseDTO.Register result = guesthouseConverter.toRegisterResponseDTO(guesthouse);
 		return result;
+
+	}
+
+	@Override
+	public GuesthouseResponseDTO.Update updateGuesthouse(Long id, GuesthouseRequestDTO.Update dto) {
+		Guesthouse guesthouse = guesthouseRepository.findById(id)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+		if (dto.getName() != null) {
+			guesthouse.setName(dto.getName());
+		}
+		if (dto.getAddressRegion() != null) {
+			guesthouse.setAddressRegion(dto.getAddressRegion());
+		}
+		if (dto.getAddressDetail() != null) {
+			guesthouse.setAddressDetail(dto.getAddressDetail());
+		}
+		if (dto.getImageUrl() != null) {
+			guesthouse.setImageUrl(dto.getImageUrl());
+		}
+		if (dto.getInformation() != null) {
+			guesthouse.setInformation(dto.getInformation());
+		}
+
+		return null;
 
 	}
 

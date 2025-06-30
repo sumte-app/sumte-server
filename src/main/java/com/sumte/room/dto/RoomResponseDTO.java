@@ -19,6 +19,14 @@ public class RoomResponseDTO {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
+	public static class Update {
+		Long roomId;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class Delete {
 		String name;
 	}

@@ -1,4 +1,4 @@
-package com.sumte.room.controller;
+package com.sumte.room.converter;
 
 import org.springframework.stereotype.Component;
 
@@ -28,6 +28,12 @@ public class RoomConverter {
 	public RoomResponseDTO.Delete toDeleteEntity(Room room) {
 		return RoomResponseDTO.Delete.builder()
 			.name(room.getName())
+			.build();
+	}
+
+	public RoomResponseDTO.Update toUpdateEntity(Room room) {
+		return RoomResponseDTO.Update.builder()
+			.roomId(room.getId())
 			.build();
 	}
 

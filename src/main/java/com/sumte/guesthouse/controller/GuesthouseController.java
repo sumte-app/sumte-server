@@ -28,9 +28,9 @@ public class GuesthouseController {
 
 	@Operation(summary = "게스트하우스 등록", description = "게스트하우스를 등록합니다.")
 	@PostMapping
-	public ApiResponse<GuesthouseResponseDTO.register> registerGuesthouse(
+	public ApiResponse<GuesthouseResponseDTO.Register> registerGuesthouse(
 		@RequestBody @Valid GuesthouseRequestDTO.Register dto) {
-		GuesthouseResponseDTO.register response = guesthouseCommandService.registerGuesthouse(dto);
+		GuesthouseResponseDTO.Register response = guesthouseCommandService.registerGuesthouse(dto);
 
 		return ApiResponse.success(response);
 	}
@@ -47,5 +47,18 @@ public class GuesthouseController {
 		return ApiResponse.success(response);
 
 	}
+
+	// @DeleteMapping("/{guesthouseId}")
+	// @Operation(summary = "게스트하우스 수정", description = "게스트하우스를 수정합니다.")
+	// @Parameters({
+	// 	@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
+	// })
+	// public ApiResponse<GuesthouseResponseDTO.Update> updateGuesthouse(
+	// 	@PathVariable(name = "guesthouseId") Long guesthouseId,
+	// 	@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
+	//
+	// 	return ApiResponse.success();
+	//
+	// }
 
 }

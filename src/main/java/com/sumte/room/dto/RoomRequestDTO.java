@@ -37,4 +37,18 @@ public class RoomRequestDTO {
 
 	}
 
+	@Getter
+	public static class Update {
+		String name;
+		String content;
+		Long price;
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+		LocalTime checkin;
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+		LocalTime checkout;
+		Long standartCount;
+		Long totalCount;
+		String imageUrl;
+	}
+
 }

@@ -12,7 +12,7 @@ public class GuesthouseRequestDTO {
 		@NotBlank(message = "이름은 필수입니다.")
 		String name;
 
-		@NotBlank(message = "검색 시 노출될 최삳단 위치 키워드를 입력해주세요")
+		@NotBlank(message = "검색 시 노출될 최상단 위치 키워드를 입력해주세요")
 		String addressRegion;
 
 		@NotBlank(message = "시 단위로 적어주세요 / 필수 값입니다.")
@@ -28,6 +28,13 @@ public class GuesthouseRequestDTO {
 
 	@Getter
 	public static class Update {
+		String name;
+		String addressRegion;
+		String addressDetail;
+		String information;
+		String imageUrl;
+		List<String> optionServices;
+		List<String> targetAudience;
 
 	}
 

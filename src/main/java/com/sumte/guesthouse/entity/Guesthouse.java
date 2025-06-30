@@ -50,4 +50,25 @@ public class Guesthouse extends BaseTimeEntity {
 		guesthouse.advertisement = AdType.NON_AD;
 		return guesthouse;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setAddressRegion(String addressRegion) {
+		this.addressRegion = addressRegion;
+	}
+
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public void setInformation(String information) {
+		this.information = information;
+	}
+
 }

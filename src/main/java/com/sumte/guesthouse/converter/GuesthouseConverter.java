@@ -15,8 +15,8 @@ public class GuesthouseConverter {
 		return Guesthouse.createByRegisterDTO(dto);
 	}
 
-	public GuesthouseResponseDTO.register toRegisterResponseDTO(Guesthouse guesthouse) {
-		return GuesthouseResponseDTO.register.builder()
+	public GuesthouseResponseDTO.Register toRegisterResponseDTO(Guesthouse guesthouse) {
+		return GuesthouseResponseDTO.Register.builder()
 			.name(guesthouse.getName())
 			.addressRegion(guesthouse.getAddressRegion())
 			.build();

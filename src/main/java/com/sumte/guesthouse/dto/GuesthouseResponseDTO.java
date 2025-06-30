@@ -10,8 +10,17 @@ public class GuesthouseResponseDTO {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class register {
+	public static class Register {
 
+		String name;
+		String addressRegion;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Update {
 		String name;
 		String addressRegion;
 	}
