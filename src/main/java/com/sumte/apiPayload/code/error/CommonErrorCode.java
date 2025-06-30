@@ -19,7 +19,13 @@ public enum CommonErrorCode implements ErrorCode {
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON405", "허용되지 않는 HTTP Method입니다."),
 
 	// COMMON 5XX
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다.");
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다."),
+
+	// 예약 관련
+	RESERVATION_DATE_INVALID(HttpStatus.BAD_REQUEST, "RES400", "체크인과 체크아웃 날짜가 올바르지 않습니다."),
+	ROOM_CAPACITY_EXCEEDED(HttpStatus.BAD_REQUEST, "RES401", "객실 최대 인원을 초과했습니다."),
+	ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "RES403", "존재하지 않는 객실입니다."),
+	ALREADY_RESERVED(HttpStatus.CONFLICT, "RES404", "해당 날짜에 이미 예약이 존재합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
