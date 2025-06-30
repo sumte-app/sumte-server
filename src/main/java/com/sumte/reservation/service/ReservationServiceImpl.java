@@ -2,6 +2,7 @@ package com.sumte.reservation.service;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.reservation.entity.ReservationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -73,4 +74,22 @@ public class ReservationServiceImpl implements ReservationService {
 				.orElseThrow(() -> new SumteException(CommonErrorCode.RESERVATION_NOT_FOUND));
 		return reservationConverter.toReservationDetailDTO(reservation);
 	}
+
+	@Override
+	@Transactional
+	public void cancelReservation(Long reservationId, Long userId) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+				.orElseThrow(() -> new SumteException(CommonErrorCode.RESERVATION_NOT_FOUND));
+
+		// 사용자 본인 확인
+		if (!reservation.getUser().getId().equals(userId)) {
+			throw new SumteException(CommonErrorCode.FORBIDDEN);
+		}
+		// 이미 취소된 예약인지 확인
+		if (reservation.getReservationStatus() == ReservationStatus.CANCELED) {
+			throw new SumteException(CommonErrorCode.ALREADY_CANCELED);
+		}
+		reservation.cancel();
+	}
+
 }

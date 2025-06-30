@@ -1,6 +1,7 @@
 package com.sumte.reservation.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.sumte.jpa.BaseTimeEntity;
 import com.sumte.room.entity.Room;
@@ -46,4 +47,8 @@ public class Reservation extends BaseTimeEntity {
 
 	@Enumerated(EnumType.STRING)
 	private ReservationStatus reservationStatus;
+
+	public void cancel() {
+		this.reservationStatus = ReservationStatus.CANCELED;
+	}
 }

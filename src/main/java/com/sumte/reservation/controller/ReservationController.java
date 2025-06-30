@@ -60,4 +60,12 @@ public class ReservationController {
 		return reservationService.getReservationDetail(reservationId, userId);
 	}
 
+	@PatchMapping("/{id}")
+	@Operation(summary = "예약 취소 API", description = "예약 ID를 기준으로 사용자의 예약을 취소합니다.")
+	public void cancelReservation(
+			@Parameter(description = "요청한 사용자 ID") @RequestHeader("userId") Long userId,
+			@PathVariable("id") Long reservationId
+	) {
+		reservationService.cancelReservation(reservationId, userId);
+	}
 }
