@@ -43,13 +43,21 @@ public class ReservationController {
 	@GetMapping("/my")
 	@Operation(summary = "내 예약 목록 조회 API", description = "내가 예약한 숙소 목록을 페이지 단위로 조회합니다.")
 	public Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(
-			@Parameter(description = "요청한 사용자 ID")
-			@RequestHeader("userId") Long userId,
+			@Parameter(description = "요청한 사용자 ID") @RequestHeader("userId") Long userId,
 			@CheckPage @RequestParam(name = "page", defaultValue = "1") int page,
 			@CheckPageSize @RequestParam(name = "size", defaultValue = "10") int size
 	) {
 		Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "startDate"));
 		return reservationService.getMyReservations(userId, pageable);
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "예약 상세 조회 API", description = "예약 ID를 기준으로 상세 정보를 조회합니다.")
+	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(
+			@Parameter(description = "요청한 사용자 ID") @RequestHeader("userId") Long userId,
+			@PathVariable("id") Long reservationId
+	) {
+		return reservationService.getReservationDetail(reservationId, userId);
 	}
 
 }

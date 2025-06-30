@@ -40,10 +40,11 @@ public class ReservationServiceImpl implements ReservationService {
 		if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate().isEqual(request.getEndDate())) {
 			throw new SumteException(CommonErrorCode.RESERVATION_DATE_INVALID);
 		}
-
 		// 정원 초과 검사
 		long totalPeople = request.getAdultCount() + request.getChildCount();
-
+		if (room.getTotalCount() < totalPeople) {
+			throw new SumteException(CommonErrorCode.ROOM_CAPACITY_EXCEEDED);
+		}
 		// 중복 예약 검사
 		boolean isOverlapping = reservationRepository.existsOverlappingReservation(room, request.getStartDate(), request.getEndDate());
 		if(isOverlapping) {
@@ -63,5 +64,13 @@ public class ReservationServiceImpl implements ReservationService {
 
 		Page<Reservation> reservations = reservationRepository.findAllByUser(user, pageable);
 		return reservations.map(reservationConverter::toMyReservationDTO);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId, Long userId) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+				.orElseThrow(() -> new SumteException(CommonErrorCode.RESERVATION_NOT_FOUND));
+		return reservationConverter.toReservationDetailDTO(reservation);
 	}
 }
