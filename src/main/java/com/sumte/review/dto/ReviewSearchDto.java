@@ -15,5 +15,5 @@ public class ReviewSearchDto {
 	private String contents;
 	private int score;
 	private String authorNickname;
-	private LocalDateTime createdAt;  // 리뷰 조회시 작성일자가 보여야하므로?
+	private LocalDateTime createdAt;  // 리뷰 조회시 작성일자가 보여야하므로
 }
