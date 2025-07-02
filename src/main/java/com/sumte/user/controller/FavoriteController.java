@@ -30,7 +30,7 @@ public class FavoriteController {
 	@PostMapping("/{guesthouseId}")
 	public ResponseEntity<Void> toggleFavorite(
 		@PathVariable Long guesthouseId,
-		@UserId Long userId  // 일단 로그인로직이 없어서 user id를 헤더를 통해 받도록
+		@UserId Long userId
 	) {
 		favService.toggleFavorite(userId, guesthouseId);
 		return ResponseEntity.noContent().build(); // 204 반 (굳이 바디는 필요x)

@@ -19,6 +19,7 @@ import com.sumte.review.dto.ReviewRequestDto;
 import com.sumte.review.dto.ReviewResponseDto;
 import com.sumte.review.dto.ReviewSearchDto;
 import com.sumte.review.service.ReviewService;
+import com.sumte.security.authorization.UserId;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,21 +36,27 @@ public class ReviewController {
 
 	@Operation(summary = "리뷰 등록")
 	@PostMapping
-	public ResponseEntity<ReviewResponseDto> createReview(@RequestBody @Valid ReviewRequestDto dto) {
-		return ResponseEntity.ok(reviewService.createReview(dto));
+	public ResponseEntity<ReviewResponseDto> createReview(
+		@UserId Long userId,
+		@RequestBody @Valid ReviewRequestDto dto) {
+		return ResponseEntity.ok(reviewService.createReview(userId, dto.getRoomId(), dto));
 	}
 
 	@Operation(summary = "리뷰 수정")
 	@PatchMapping("/{id}")
 	public ResponseEntity<ReviewResponseDto> updateReview(
-		@PathVariable Long id, @RequestBody @Valid ReviewRequestDto dto) {
-		return ResponseEntity.ok(reviewService.updateReview(id, dto));
+		@UserId Long userId,
+		@PathVariable Long id,
+		@RequestBody @Valid ReviewRequestDto dto) {
+		return ResponseEntity.ok(reviewService.updateReview(userId, id, dto));
 	}
 
 	@Operation(summary = "리뷰 삭제")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-		reviewService.deleteReview(id);
+	public ResponseEntity<Void> deleteReview(
+		@UserId Long userId,
+		@PathVariable Long id) {
+		reviewService.deleteReview(userId, id);
 		return ResponseEntity.noContent().build();
 	}
 

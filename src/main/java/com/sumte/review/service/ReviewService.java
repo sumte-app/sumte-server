@@ -29,8 +29,8 @@ public class ReviewService {
 	private final RoomRepository roomRepository;
 
 	@Transactional
-	public ReviewResponseDto createReview(ReviewRequestDto dto) {
-		User user = userRepository.findById(dto.getUserId())
+	public ReviewResponseDto createReview(Long userId, Long roomId, ReviewRequestDto dto) {
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new SumteException(ReviewErrorCode.USER_NOT_FOUND));
 		Room room = roomRepository.findById(dto.getRoomId())
 			.orElseThrow(() -> new SumteException(ReviewErrorCode.ROOM_NOT_FOUND));
@@ -41,18 +41,27 @@ public class ReviewService {
 	}
 
 	@Transactional
-	public ReviewResponseDto updateReview(Long id, ReviewRequestDto dto) {
+	public ReviewResponseDto updateReview(Long userId, Long id, ReviewRequestDto dto) {
 		Review review = reviewRepository.findById(id)
 			.orElseThrow(() -> new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+		if (!review.getUser().getId().equals(userId)) {
+			throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
+		}
 
 		ReviewConverter.updateEntity(review, dto);
 		return ReviewConverter.toDto(review);
 	}
 
 	@Transactional
-	public void deleteReview(Long id) {
+	public void deleteReview(Long userId, Long id) {
 		Review review = reviewRepository.findById(id)
 			.orElseThrow(() -> new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+		if (!review.getUser().getId().equals(userId)) {
+			throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
+		}
+
 		reviewRepository.delete(review);
 	}
 

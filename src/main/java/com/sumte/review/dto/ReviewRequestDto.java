@@ -10,9 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReviewRequestDto {
-	@NotNull
-	private Long userId;
-
+	
 	@NotNull
 	private Long roomId;
 
