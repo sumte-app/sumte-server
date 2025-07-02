@@ -1,6 +1,7 @@
 package com.sumte.reservation.service;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
+import com.sumte.apiPayload.code.error.ReservationErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
 import com.sumte.reservation.entity.ReservationStatus;
 import org.springframework.data.domain.Page;
@@ -35,21 +36,21 @@ public class ReservationServiceImpl implements ReservationService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
 		Room room = roomRepository.findById(request.getRoomId())
-				.orElseThrow(() -> new SumteException(CommonErrorCode.ROOM_NOT_FOUND));
+				.orElseThrow(() -> new SumteException(ReservationErrorCode.ROOM_NOT_FOUND));
 
 		// 닐짜 유효성 검사
 		if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate().isEqual(request.getEndDate())) {
-			throw new SumteException(CommonErrorCode.RESERVATION_DATE_INVALID);
+			throw new SumteException(ReservationErrorCode.RESERVATION_DATE_INVALID);
 		}
 		// 정원 초과 검사
 		long totalPeople = request.getAdultCount() + request.getChildCount();
 		if (room.getTotalCount() < totalPeople) {
-			throw new SumteException(CommonErrorCode.ROOM_CAPACITY_EXCEEDED);
+			throw new SumteException(ReservationErrorCode.ROOM_CAPACITY_EXCEEDED);
 		}
 		// 중복 예약 검사
 		boolean isOverlapping = reservationRepository.existsOverlappingReservation(room, request.getStartDate(), request.getEndDate());
 		if(isOverlapping) {
-			throw new SumteException(CommonErrorCode.ALREADY_RESERVED);
+			throw new SumteException(ReservationErrorCode.ALREADY_RESERVED);
 		}
 
 		Reservation reservation = reservationConverter.toEntity(request,user,room);
@@ -71,7 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional(readOnly = true)
 	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId, Long userId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
-				.orElseThrow(() -> new SumteException(CommonErrorCode.RESERVATION_NOT_FOUND));
+				.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 		return reservationConverter.toReservationDetailDTO(reservation);
 	}
 
@@ -79,7 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	public void cancelReservation(Long reservationId, Long userId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
-				.orElseThrow(() -> new SumteException(CommonErrorCode.RESERVATION_NOT_FOUND));
+				.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 
 		// 사용자 본인 확인
 		if (!reservation.getUser().getId().equals(userId)) {
@@ -87,7 +88,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		// 이미 취소된 예약인지 확인
 		if (reservation.getReservationStatus() == ReservationStatus.CANCELED) {
-			throw new SumteException(CommonErrorCode.ALREADY_CANCELED);
+			throw new SumteException(ReservationErrorCode.ALREADY_CANCELED);
 		}
 		reservation.cancel();
 	}
