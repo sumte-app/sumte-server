@@ -1,6 +1,5 @@
 package com.sumte.security.controller;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.security.converter.SignInConverter;
 import com.sumte.security.dto.request.SignInRequest;
+import com.sumte.security.dto.response.SignInResponse;
 import com.sumte.security.tokenManger.TokenManager;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,12 +27,12 @@ public class SignInController {
 	private final AuthenticationManager authenticationManager;
 	private final TokenManager tokenManager;
 
-	@Operation(summary = "로그인 API", description = "헤더로 JWT 토큰을 반환합니다.")
+	@Operation(summary = "로그인 API", description = "바디로 JWT 토큰을 반환합니다.")
 	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> singIn(@RequestBody SignInRequest signInRequest) {
+	public ResponseEntity<ApiResponse<SignInResponse>> singIn(@RequestBody SignInRequest signInRequest) {
 		Authentication authentication = authenticationManager.authenticate(
 			SignInConverter.toAuthenticationToken(signInRequest));
 		String jwt = tokenManager.writeToken(authentication);
-		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).build();
+		return ResponseEntity.ok(ApiResponse.success(new SignInResponse("Bearer " + jwt)));
 	}
 }
