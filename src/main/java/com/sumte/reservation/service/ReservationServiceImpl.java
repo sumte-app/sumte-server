@@ -73,6 +73,11 @@ public class ReservationServiceImpl implements ReservationService {
 	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId, Long userId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 				.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		if (!reservation.getUser().getId().equals(userId)) {
+			throw new SumteException(CommonErrorCode.FORBIDDEN);
+		}
+
 		return reservationConverter.toReservationDetailDTO(reservation);
 	}
 
