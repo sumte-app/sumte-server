@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
-import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
 import com.sumte.guesthouse.service.GuesthouseCommandService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,11 +28,11 @@ public class GuesthouseController {
 
 	@Operation(summary = "게스트하우스 등록", description = "게스트하우스를 등록합니다.")
 	@PostMapping
-	public ApiResponse<GuesthouseResponseDTO.Register> registerGuesthouse(
+	public ApiResponse<Void> registerGuesthouse(
 		@RequestBody @Valid GuesthouseRequestDTO.Register dto) {
-		GuesthouseResponseDTO.Register response = guesthouseCommandService.registerGuesthouse(dto);
+		guesthouseCommandService.registerGuesthouse(dto);
 
-		return ApiResponse.success(response);
+		return ApiResponse.successWithNoData();
 	}
 
 	@DeleteMapping("/{guesthouseId}")
@@ -41,11 +40,11 @@ public class GuesthouseController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
 	})
-	public ApiResponse<GuesthouseResponseDTO.delete> deleteGuesthouse(
+	public ApiResponse<Void> deleteGuesthouse(
 		@PathVariable(name = "guesthouseId") Long guesthouseId) {
-		GuesthouseResponseDTO.delete response = guesthouseCommandService.deleteGuesthouse(guesthouseId);
+		guesthouseCommandService.deleteGuesthouse(guesthouseId);
 
-		return ApiResponse.success(response);
+		return ApiResponse.successWithNoData();
 
 	}
 
@@ -54,11 +53,11 @@ public class GuesthouseController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
 	})
-	public ApiResponse<GuesthouseResponseDTO.Update> updateGuesthouse(
+	public ApiResponse<Void> updateGuesthouse(
 		@PathVariable(name = "guesthouseId") Long guesthouseId,
 		@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
-		GuesthouseResponseDTO.Update result = guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
-		return ApiResponse.success(result);
+		guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
+		return ApiResponse.successWithNoData();
 
 	}
 

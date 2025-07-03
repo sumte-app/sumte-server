@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.room.dto.RoomRequestDTO;
-import com.sumte.room.dto.RoomResponseDTO;
 import com.sumte.room.service.RoomCommandService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,12 +31,12 @@ public class RoomController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요")
 	})
-	public ApiResponse<RoomResponseDTO.Register> registerRoom(
+	public ApiResponse<Void> registerRoom(
 		@PathVariable Long guesthouseId,
 		@RequestBody @Valid RoomRequestDTO.Register dto) {
-		RoomResponseDTO.Register result = roomCommandService.registerRoom(dto, guesthouseId);
+		roomCommandService.registerRoom(dto, guesthouseId);
 
-		return ApiResponse.success(result);
+		return ApiResponse.successWithNoData();
 
 	}
 
@@ -47,12 +46,12 @@ public class RoomController {
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요"),
 		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
 	})
-	public ApiResponse<RoomResponseDTO.Delete> deleteRoom(
+	public ApiResponse<Void> deleteRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId
 	) {
-		RoomResponseDTO.Delete result = roomCommandService.deleteRoom(roomId, guesthouseId);
+		roomCommandService.deleteRoom(roomId, guesthouseId);
 
-		return ApiResponse.success(result);
+		return ApiResponse.successWithNoData();
 
 	}
 
@@ -62,12 +61,12 @@ public class RoomController {
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요"),
 		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
 	})
-	public ApiResponse<RoomResponseDTO.Update> updateRoom(
+	public ApiResponse<Void> updateRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId,
 		@RequestBody @Valid RoomRequestDTO.Update dto
 	) {
-		RoomResponseDTO.Update result = roomCommandService.updateRoom(dto, guesthouseId, roomId);
-		return ApiResponse.success(result);
+		roomCommandService.updateRoom(dto, guesthouseId, roomId);
+		return ApiResponse.successWithNoData();
 	}
 
 }
