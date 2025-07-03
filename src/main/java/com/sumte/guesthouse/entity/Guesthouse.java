@@ -3,6 +3,7 @@ package com.sumte.guesthouse.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
 import com.sumte.jpa.BaseTimeEntity;
 import com.sumte.room.entity.Room;
 
@@ -34,6 +35,40 @@ public class Guesthouse extends BaseTimeEntity {
 
 	private String imageUrl;
 
+	private String information;
+
 	@OneToMany(mappedBy = "guesthouse", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Room> rooms = new ArrayList<>();
+
+	public static Guesthouse createByRegisterDTO(GuesthouseRequestDTO.Register dto) {
+		Guesthouse guesthouse = new Guesthouse();
+		guesthouse.name = dto.getName();
+		guesthouse.addressRegion = dto.getAddressRegion();
+		guesthouse.addressDetail = dto.getAddressDetail();
+		guesthouse.imageUrl = dto.getImageUrl();
+		guesthouse.information = dto.getInformation();
+		guesthouse.advertisement = AdType.NON_AD;
+		return guesthouse;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setAddressRegion(String addressRegion) {
+		this.addressRegion = addressRegion;
+	}
+
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public void setInformation(String information) {
+		this.information = information;
+	}
+
 }
