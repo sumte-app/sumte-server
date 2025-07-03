@@ -29,4 +29,12 @@ public class GuesthouseOptionServices extends BaseTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "option_services_id")
 	private OptionServices optionServices;
+
+	public void setGuesthouse(Guesthouse guesthouse) {
+		this.guesthouse = guesthouse;
+	}
+
+	public void setOptionServices(OptionServices optionServices) {
+		this.optionServices = optionServices;
+	}
 }
