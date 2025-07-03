@@ -9,7 +9,7 @@ import com.sumte.user.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	Optional<User> findByLoginId(String loginId);
+    Optional<User> findByLoginId(String loginId);
 
-	Optional<User> findByNickname(String nickName);
+    Optional<User> findByNickname(String nickName);
 }

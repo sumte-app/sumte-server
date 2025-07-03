@@ -1,6 +1,7 @@
 package com.sumte.reservation.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.sumte.jpa.BaseTimeEntity;
 import com.sumte.room.entity.Room;
@@ -15,12 +16,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Reservation extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +47,8 @@ public class Reservation extends BaseTimeEntity {
 
 	@Enumerated(EnumType.STRING)
 	private ReservationStatus reservationStatus;
+
+	public void cancel() {
+		this.reservationStatus = ReservationStatus.CANCELED;
+	}
 }

@@ -1,5 +1,6 @@
 package com.sumte.apiPayload.handler;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,19 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 		log.warn("handleIllegalArgument");
 		ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
 		return handleExceptionInternal(errorCode, ex.getMessage());
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
+		log.warn("handleConstraintViolationException");
+
+		String message = ex.getConstraintViolations()
+				.stream()
+				.findFirst()
+				.map(violation -> violation.getMessage())
+				.orElse(CommonErrorCode.INVALID_PARAMETER.getMessage());
+
+		return handleExceptionInternal(CommonErrorCode.INVALID_PARAMETER, message);
 	}
 
 	@Override
