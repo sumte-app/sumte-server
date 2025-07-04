@@ -9,12 +9,13 @@ import com.sumte.user.entity.User;
 public class ReviewConverter {
 
 	public static Review toEntity(ReviewRequestDto dto, User user, Room room) {
-		Review review = new Review();
-		review.assignUserAndRoom(user, room);
-		review.changeImageUrl(dto.getImageUrl());
-		review.changeContents(dto.getContents());
-		review.changeScore(dto.getScore());
-		return review;
+		return Review.builder()
+			.user(user)
+			.room(room)
+			.imageUrl(dto.getImageUrl())
+			.contents(dto.getContents())
+			.score(dto.getScore())
+			.build();
 	}
 
 	public static void updateEntity(Review review, ReviewRequestDto dto) {

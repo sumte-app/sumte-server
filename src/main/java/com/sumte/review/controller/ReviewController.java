@@ -39,7 +39,8 @@ public class ReviewController {
 	public ResponseEntity<ReviewResponseDto> createReview(
 		@UserId Long userId,
 		@RequestBody @Valid ReviewRequestDto dto) {
-		return ResponseEntity.ok(reviewService.createReview(userId, dto.getRoomId(), dto));
+		reviewService.createReview(userId, dto.getRoomId(), dto);
+		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "리뷰 수정")
@@ -48,7 +49,8 @@ public class ReviewController {
 		@UserId Long userId,
 		@PathVariable Long id,
 		@RequestBody @Valid ReviewRequestDto dto) {
-		return ResponseEntity.ok(reviewService.updateReview(userId, id, dto));
+		reviewService.updateReview(userId, id, dto);
+		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "리뷰 삭제")

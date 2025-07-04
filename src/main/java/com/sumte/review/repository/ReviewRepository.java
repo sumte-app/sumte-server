@@ -1,5 +1,7 @@
 package com.sumte.review.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +14,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	// 게스트하우스 내 전체 리뷰 조회
 	Page<Review> findAllByRoomGuesthouseId(Long guesthouseId, Pageable pageable);
+
+	Optional<Review> findByIdAndUserId(Long reviewId, Long userId);
 }

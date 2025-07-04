@@ -1,5 +1,7 @@
 package com.sumte.review.service;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,27 +44,31 @@ public class ReviewService {
 
 	@Transactional
 	public ReviewResponseDto updateReview(Long userId, Long id, ReviewRequestDto dto) {
-		Review review = reviewRepository.findById(id)
-			.orElseThrow(() -> new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND));
-
-		if (!review.getUser().getId().equals(userId)) {
-			throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
+		Optional<Review> opt = reviewRepository.findByIdAndUserId(id, userId);
+		if (opt.isPresent()) {
+			Review review = opt.get();
+			ReviewConverter.updateEntity(review, dto);
+			return ReviewConverter.toDto(review);
 		}
-
-		ReviewConverter.updateEntity(review, dto);
-		return ReviewConverter.toDto(review);
+		// id 자체가 존재하지 않으면 NOT_FOUND로
+		if (!reviewRepository.existsById(id)) {
+			throw new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND);
+		}
+		// id는 있지만 userId가 다르면 UNAUTH로
+		throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
 	}
 
 	@Transactional
 	public void deleteReview(Long userId, Long id) {
-		Review review = reviewRepository.findById(id)
-			.orElseThrow(() -> new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND));
-
-		if (!review.getUser().getId().equals(userId)) {
-			throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
+		Optional<Review> opt = reviewRepository.findByIdAndUserId(id, userId);
+		if (opt.isPresent()) {
+			reviewRepository.delete(opt.get());
+			return;
 		}
-
-		reviewRepository.delete(review);
+		if (!reviewRepository.existsById(id)) {
+			throw new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND);
+		}
+		throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
 	}
 
 	@Transactional(readOnly = true)
