@@ -3,12 +3,16 @@ package com.sumte.review.dto;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 //리뷰 목록 조회 시 반환할 DTO
 
-@Getter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Getter
 public class ReviewSearchDto {
 	private Long id;
 	private String imageUrl;

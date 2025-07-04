@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.review.dto.ReviewRequestDto;
-import com.sumte.review.dto.ReviewResponseDto;
 import com.sumte.review.dto.ReviewSearchDto;
 import com.sumte.review.service.ReviewService;
 import com.sumte.security.authorization.UserId;
@@ -36,7 +35,7 @@ public class ReviewController {
 
 	@Operation(summary = "리뷰 등록")
 	@PostMapping
-	public ResponseEntity<ReviewResponseDto> createReview(
+	public ResponseEntity<Void> createReview(
 		@UserId Long userId,
 		@RequestBody @Valid ReviewRequestDto dto) {
 		reviewService.createReview(userId, dto.getRoomId(), dto);
@@ -45,7 +44,7 @@ public class ReviewController {
 
 	@Operation(summary = "리뷰 수정")
 	@PatchMapping("/{id}")
-	public ResponseEntity<ReviewResponseDto> updateReview(
+	public ResponseEntity<Void> updateReview(
 		@UserId Long userId,
 		@PathVariable Long id,
 		@RequestBody @Valid ReviewRequestDto dto) {
