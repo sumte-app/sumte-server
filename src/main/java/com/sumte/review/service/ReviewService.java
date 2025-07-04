@@ -71,13 +71,6 @@ public class ReviewService {
 		throw new SumteException(ReviewErrorCode.UNAUTHORIZED);
 	}
 
-	@Transactional(readOnly = true)
-	public Page<ReviewSearchDto> getReviewsByRoom(Long roomId, Pageable pageable) {
-		return reviewRepository
-			.findAllByRoomId(roomId, pageable)
-			.map(this::toListDto);
-	}
-
 	private ReviewSearchDto toListDto(Review r) {
 		return new ReviewSearchDto(
 			r.getId(),
