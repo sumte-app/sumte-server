@@ -15,4 +15,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	//피드백 반영 (로직 개선)
 	Optional<Review> findByIdAndUserId(Long reviewId, Long userId);
+
+	//내가 작성한 리뷰 조회 (단순 내가 작성한 리뷰만 조회하는거라 넣었는데 다시 확인(중복) )
+	Page<Review> findAllByUserId(Long userId, Pageable pageable);
 }

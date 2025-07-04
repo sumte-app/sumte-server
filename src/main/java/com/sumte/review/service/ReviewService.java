@@ -88,4 +88,13 @@ public class ReviewService {
 			.findAllByRoomGuesthouseId(guesthouseId, pageable)
 			.map(this::toListDto);
 	}
+
+	//리뷰테이블에서 userid와 일치하는 모든 리뷰 가져오기, 이 각 엔티티->dto로 변환
+	@Transactional(readOnly = true)
+	public Page<ReviewSearchDto> getMyReviews(Long userId, Pageable pageable) {
+		return reviewRepository
+			.findAllByUserId(userId, pageable)
+			.map(this::toListDto);
+	}
+
 }

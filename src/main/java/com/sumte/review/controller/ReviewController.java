@@ -72,5 +72,17 @@ public class ReviewController {
 		Page<ReviewSearchDto> page = reviewService.getReviewsByGuesthouse(guesthouseId, pageable);
 		return ResponseEntity.ok(page);
 	}
+
+	@Operation(summary = "내가 남긴 리뷰 전체 조회")
+	@GetMapping("/myreviews")
+	public ResponseEntity<Page<ReviewSearchDto>> getMyReviews(
+		@UserId Long userId,
+		@ParameterObject
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+		Pageable pageable
+	) {
+		Page<ReviewSearchDto> page = reviewService.getMyReviews(userId, pageable);
+		return ResponseEntity.ok(page);
+	}
 }
 
