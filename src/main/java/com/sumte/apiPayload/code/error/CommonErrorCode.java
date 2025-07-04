@@ -18,12 +18,24 @@ public enum CommonErrorCode implements ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404", "사용자를 찾을 수 없습니다"),
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON405", "허용되지 않는 HTTP Method입니다."),
 
+    // GUESTHOUSE4XX
+    DUPLICATE_DATA(HttpStatus.BAD_REQUEST, "GUESTHOUSE401", "중복된 게스트하우스 입니다."),
+    NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE402", "존재하지 않는 게스트하우스 입니다."),
+    OPTIONSERVICE_NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE403", "존재하지 않는 부가 서비스 입니다."),
+    TARGETAUDIENCE_NOT_EXIST(HttpStatus.BAD_REQUEST, "GUESTHOUSE404", "존재하지 않는 이용대상 입니다."),
+
+    // ROOM4XX
+    ALREADY_EXIST(HttpStatus.BAD_REQUEST, "ROOM401", "이미 같은 방이 존재합니다."),
+    NOT_EXIST_ROOM(HttpStatus.BAD_REQUEST, "ROOM402", "존재하지 않는 방입니다."),
+
 	// COMMON 5XX
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다.");
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류입니다."),
+
+    // page 처리 관련
+    PAGE_UNDER_ONE(HttpStatus.BAD_REQUEST,"PAGE_4001","페이지는 1이상으로 입력해야 합니다."),
+    PAGE_SIZE_UNDER_ONE(HttpStatus.BAD_REQUEST,"PAGE_4002","페이지 사이즈는 1이상으로 입력해야 합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
 	private final String message;
 }
-
-
