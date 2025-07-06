@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,14 +27,24 @@ import lombok.RequiredArgsConstructor;
 public class FavoriteController {
 	private final FavoriteService favService;
 
-	@Operation(summary = "찜 토글 (찜 / 취소)")
+	@Operation(summary = "찜 추가")
 	@PostMapping("/{guesthouseId}")
-	public ResponseEntity<Void> toggleFavorite(
+	public ResponseEntity<Void> addFavorite(
 		@PathVariable Long guesthouseId,
 		@UserId Long userId
 	) {
-		favService.toggleFavorite(userId, guesthouseId);
-		return ResponseEntity.noContent().build(); // 204 반 (굳이 바디는 필요x)
+		favService.addFavorite(userId, guesthouseId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(summary = "찜 취소")
+	@DeleteMapping("/{guesthouseId}")
+	public ResponseEntity<Void> removeFavorite(
+		@PathVariable Long guesthouseId,
+		@UserId Long userId
+	) {
+		favService.removeFavorite(userId, guesthouseId);
+		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "사용자 찜 목록 조회")

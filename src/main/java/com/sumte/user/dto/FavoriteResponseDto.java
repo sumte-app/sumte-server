@@ -9,5 +9,4 @@ import lombok.Getter;
 public class FavoriteResponseDto {
 	private Long guesthouseId;   // 찜한 게스트하우스 ID
 	private String guesthouseName; // 이름
-	private boolean isFavorite;  // 지금 이 숙소가 찜 상태인지 (일단 추가)
 }

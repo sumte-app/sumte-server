@@ -26,20 +26,24 @@ public class FavoriteService {
 	private final GuesthouseRepository guesthouseRepository;
 
 	@Transactional
-	public void toggleFavorite(Long userId, Long guesthouseId) {
+	public void addFavorite(Long userId, Long guesthouseId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new SumteException(FavoriteErrorCode.USER_NOT_FOUND));
 		Guesthouse gh = guesthouseRepository.findById(guesthouseId)
 			.orElseThrow(() -> new SumteException(FavoriteErrorCode.GUESTHOUSE_NOT_FOUND));
 
+		// 이미 있으면 그냥 리턴
+		if (favoriteRepository.existsByUserIdAndGuesthouseId(userId, guesthouseId)) {
+			return;
+		}
+		favoriteRepository.save(Favorite.create(user, gh));
+	}
+
+	@Transactional
+	public void removeFavorite(Long userId, Long guesthouseId) {
 		favoriteRepository
 			.findByUserIdAndGuesthouseId(userId, guesthouseId)
-			.ifPresentOrElse(
-				favoriteRepository::delete,                   // 이미 있으면 삭제
-				() -> favoriteRepository.save(                // 없으면 생성
-					Favorite.create(user, gh)
-				)
-			);
+			.ifPresent(favoriteRepository::delete);
 	}
 
 	@Transactional(readOnly = true)
@@ -48,8 +52,7 @@ public class FavoriteService {
 			.findAllByUserId(userId, pageable)             //페이징으로 엔티티 불러와 dto로 변환
 			.map(fav -> new FavoriteResponseDto(
 				fav.getGuesthouse().getId(),
-				fav.getGuesthouse().getName(),
-				true                 //찜이 된 목록들이니 항상 true
+				fav.getGuesthouse().getName()
 			));
 	}
 }
