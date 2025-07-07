@@ -1,5 +1,6 @@
 package com.sumte.room.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +18,11 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	@Query("SELECT MIN(r.price) FROM Room r WHERE r.guesthouse.id = :guesthouseId")
 	Long findMinPriceByGuesthouseId(@Param("guesthouseId") Long guesthouseId);
 
-	@Query("SELECT MIN(FUNCTION('TIME_FORMAT', r.checkin, '%H:%i')) " +
-		"FROM Room r WHERE r.guesthouse.id = :guesthouseId")
+	@Query("SELECT MIN(FUNCTION('TIME_FORMAT', r.checkin, '%H:%i')) "
+		+ "FROM Room r WHERE r.guesthouse.id = :guesthouseId")
 	String findEarliestCheckinByGuesthouseId(@Param("guesthouseId") Long guesthouseId);
+
+	//객실 조회
+	List<Room> findAllByGuesthouseId(Long guesthouseId);
+
 }
