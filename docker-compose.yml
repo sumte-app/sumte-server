@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  app:
+    image: ${DOCKER_HUB_USERNAME}/${DOCKER_HUB_REPOSITORY}:latest
+    container_name: app
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
