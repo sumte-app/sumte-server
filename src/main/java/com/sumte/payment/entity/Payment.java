@@ -46,4 +46,8 @@
 		public void markAsFailed() {
 			this.paymentStatus = PaymentStatus.FAILED;
 		}
+
+		public void markAsRefunded() {
+			this.paymentStatus = PaymentStatus.REFUNDED;
+		}
 	}
