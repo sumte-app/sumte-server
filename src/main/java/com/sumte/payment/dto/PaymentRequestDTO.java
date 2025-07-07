@@ -16,12 +16,4 @@ public class PaymentRequestDTO {
         private Long amount;
         private String paymentMethod;
     }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ApprovePaymentDTO {
-        private String pgToken;
-    }
 }

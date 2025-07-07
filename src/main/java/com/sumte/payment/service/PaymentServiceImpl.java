@@ -42,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void approvePayment(Long paymentId, PaymentRequestDTO.ApprovePaymentDTO dto) {
+    public void approvePayment(Long paymentId, String pgToken) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new SumteException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 
@@ -50,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new SumteException(PaymentErrorCode.ALREADY_APPROVED_PAYMENT);
         }
 
-        if (dto.getPgToken() == null || dto.getPgToken().isBlank()) {
+        if (pgToken == null || pgToken.isBlank()) {
             transactionHelper.markPaymentFailed(payment);
             throw new SumteException(PaymentErrorCode.PG_TOKEN_MISSING);
         }

@@ -35,9 +35,9 @@ public class PaymentController {
     )
     public ResponseEntity<ApiResponse<Void>> approvePayment(
             @PathVariable("id") Long id,
-            @Valid @RequestBody PaymentRequestDTO.ApprovePaymentDTO dto) {
+            @RequestParam("pg_token") String pgToken) {
 
-        paymentService.approvePayment(id, dto);
+        paymentService.approvePayment(id, pgToken);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
