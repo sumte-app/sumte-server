@@ -6,6 +6,7 @@ import com.sumte.payment.converter.PaymentConverter;
 import com.sumte.payment.dto.PaymentRequestDTO;
 import com.sumte.payment.dto.PaymentResponseDTO;
 import com.sumte.payment.entity.Payment;
+import com.sumte.payment.entity.PaymentStatus;
 import com.sumte.payment.repository.PaymentRepository;
 import com.sumte.reservation.entity.Reservation;
 import com.sumte.reservation.repository.ReservationRepository;
@@ -19,6 +20,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
+    private final PaymentTransactionHelper transactionHelper;
 
     @Override
     @Transactional
@@ -37,4 +39,23 @@ public class PaymentServiceImpl implements PaymentService {
         String paymentUrl = "https://pay.mock.kakao.com/" + payment.getId();
         return PaymentConverter.toCreateResponse(payment, paymentUrl);
     }
+
+    @Override
+    @Transactional
+    public void approvePayment(Long paymentId, PaymentRequestDTO.ApprovePaymentDTO dto) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new SumteException(PaymentErrorCode.PAYMENT_NOT_FOUND));
+
+        if (payment.getPaymentStatus() == PaymentStatus.PAID) {
+            throw new SumteException(PaymentErrorCode.ALREADY_APPROVED_PAYMENT);
+        }
+
+        if (dto.getPgToken() == null || dto.getPgToken().isBlank()) {
+            transactionHelper.markPaymentFailed(payment);
+            throw new SumteException(PaymentErrorCode.PG_TOKEN_MISSING);
+        }
+
+        payment.markAsPaid();
+    }
+
 }

@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payments")
@@ -29,5 +26,18 @@ public class PaymentController {
 
         PaymentResponseDTO.CreatePaymentDTO response = paymentService.requestPayment(dto);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PatchMapping("/{id}/approve")
+    @Operation(
+            summary = "결제 승인 처리 API",
+            description = "PG사(예: 카카오페이) 결제 완료 후, 해당 결제 ID의 상태를 PAID로 변경합니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> approvePayment(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody PaymentRequestDTO.ApprovePaymentDTO dto) {
+
+        paymentService.approvePayment(id, dto);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
