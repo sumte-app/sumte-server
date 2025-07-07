@@ -100,6 +100,8 @@ jobs:
             echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> /home/ubuntu/.env
             echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> /home/ubuntu/.env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> /home/ubuntu/.env
+            echo "S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}" >> /home/ubuntu/.env
+            echo "S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/ubuntu/.env
             
             # .env 파일 권한 설정
             chmod 600 /home/ubuntu/.env
