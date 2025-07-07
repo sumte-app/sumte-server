@@ -40,4 +40,20 @@ public class GuesthouseResponseDTO {
 		String addressDetail;
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class HomeSummary {
+		private Long guestHouseId;
+		private String name;
+		private String addressRegion;
+		private String imageUrl;
+		private Double averageScore;
+		private int reviewCount;
+		private String checkInTime;
+		private Long minPrice;
+		private boolean isAd;
+	}
+
 }
