@@ -34,4 +34,12 @@ public class Refund extends BaseTimeEntity {
 
 	@Enumerated(EnumType.STRING)
 	private RefundStatus refundStatus;
+
+	public void markAsCompleted() {
+		this.refundStatus = RefundStatus.COMPLETED;
+	}
+
+	public void markAsFailed() {
+		this.refundStatus = RefundStatus.FAILED;
+	}
 }

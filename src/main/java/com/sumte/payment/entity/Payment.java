@@ -39,6 +39,8 @@
 		@Enumerated(EnumType.STRING)
 		private PaymentMethod paymentMethod;
 
+		private String tid;
+
 		public void markAsPaid() {
 			this.paymentStatus = PaymentStatus.PAID;
 		}
