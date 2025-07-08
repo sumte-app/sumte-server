@@ -3,6 +3,7 @@ name: Sumte CD Workflow using github actions & docker compose
 on:
   push:
     branches: [ "main" ]  # main 브랜치에 push될 때만 동작
+  workflow_dispatch:
 
 jobs:
   build-and-push-image:
@@ -62,6 +63,14 @@ jobs:
     needs: build-and-push-image
 
     steps:
+      - name: Debug raw SSH
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > id_rsa
+          chmod 600 id_rsa
+          ssh -o StrictHostKeyChecking=no \
+              -i id_rsa \
+              ubuntu@${{ secrets.EC2_HOST }} whoami
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
