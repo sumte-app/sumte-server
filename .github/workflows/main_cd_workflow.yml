@@ -72,7 +72,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: ./docker-compose.yml
-          target: /home/ubuntu/docker-compose.yml
+          target: /home/ubuntu
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@v1.0.0
@@ -81,33 +81,45 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -eo pipefail
+            
             # 디스크 청소 두 줄 / Docker 이미지, 로그 정리
             docker system prune -af || true
             docker builder prune -af
             docker volume prune -f
             
-            # docker-compose 설치 여부 확인, 없으면 설치
-            if ! command -v docker-compose &> /dev/null
-            then
-              sudo apt-get update
-              sudo apt-get install -y docker-compose-plugin
-            fi
-
+            # Docker Compose V2 플러그인 설치 (Ubuntu 공식 레포)
+            sudo apt-get remove -y docker-compose || true
+            sudo apt-get update
+            sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+              | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            echo \
+              "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+              https://download.docker.com/linux/ubuntu \
+              $(lsb_release -cs) stable" \
+              | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y docker-compose-plugin
+            docker compose version            
+            
             # 최신 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:latest
             
             # .env 파일 생성
-            echo "SPRING_PROFILES_ACTIVE=prod" > /home/ubuntu/.env
-            echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> /home/ubuntu/.env
-            echo "DOCKER_HUB_REPOSITORY=${{ secrets.DOCKER_HUB_REPOSITORY }}" >> /home/ubuntu/.env
-            echo "RDS_HOST=${{ secrets.RDS_HOST }}" >> /home/ubuntu/.env
-            echo "RDS_PORT=${{ secrets.RDS_PORT }}" >> /home/ubuntu/.env
-            echo "RDS_DB=${{ secrets.RDS_DB }}" >> /home/ubuntu/.env
-            echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> /home/ubuntu/.env
-            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> /home/ubuntu/.env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> /home/ubuntu/.env
-            echo "S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}" >> /home/ubuntu/.env
-            echo "S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/ubuntu/.env
+            cat <<EOF > /home/ubuntu/.env
+            SPRING_PROFILES_ACTIVE=prod
+            DOCKER_HUB_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            DOCKER_HUB_REPOSITORY=${{ secrets.DOCKER_HUB_REPOSITORY }}
+            RDS_HOST=${{ secrets.RDS_HOST }}
+            RDS_PORT=${{ secrets.RDS_PORT }}
+            RDS_DB=${{ secrets.RDS_DB }}
+            RDS_USERNAME=${{ secrets.RDS_USERNAME }}
+            RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            EOF
             
             # .env 파일 권한 설정
             chmod 600 /home/ubuntu/.env
@@ -115,10 +127,8 @@ jobs:
             # 기존 app 컨테이너 강제 제거 (없어도 에러 무시)
             docker rm -f app || true
             
-            # docker-compose pull
+            # docker-compose로 재배포
             docker compose -f /home/ubuntu/docker-compose.yml pull
-            
-            # docker-compose 재배포
             docker compose -f /home/ubuntu/docker-compose.yml up -d --force-recreate --remove-orphans
 
 #      - name: Send Discord Notification
