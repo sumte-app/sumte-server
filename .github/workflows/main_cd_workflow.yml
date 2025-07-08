@@ -63,13 +63,14 @@ jobs:
     needs: build-and-push-image
 
     steps:
-      - name: Debug raw SSH
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > id_rsa
-          chmod 600 id_rsa
-          ssh -o StrictHostKeyChecking=no \
-              -i id_rsa \
-              ubuntu@${{ secrets.EC2_HOST }} whoami
+      #      - name: Load SSH key into agent
+      #        uses: webfactory/ssh-agent@v0.5.4
+      #        with:
+      #          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      #
+      #      - name: Test SSH
+      #        run: ssh -o StrictHostKeyChecking=no \
+      #          ubuntu@${{ secrets.EC2_HOST }} whoami
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -82,8 +83,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: ./docker-compose.yml
           target: /home/ubuntu
-          rm: true           # 복사 전 기존 파일/디렉터리 삭제
-          overwrite: true          # 덮어쓰기 허용
+          overwrite: true
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@v1.0.0
@@ -100,16 +100,6 @@ jobs:
             docker volume prune -f
             
             # Docker Compose V2 플러그인 설치 (Ubuntu 공식 레포)
-            sudo apt-get remove -y docker-compose || true
-            sudo apt-get update
-            sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-              | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-            echo \
-              "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
-              https://download.docker.com/linux/ubuntu \
-              $(lsb_release -cs) stable" \
-              | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
             sudo apt-get update
             sudo apt-get install -y docker-compose-plugin
             docker compose version            
