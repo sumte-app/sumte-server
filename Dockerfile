@@ -5,11 +5,11 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends curl \
  && rm -rf /var/lib/apt/lists/*
 
-ARG JAR_FILE=build/libs/sumte.jar
+ARG JAR_FILE=build/libs/*.jar
 
-COPY ${JAR_FILE} app.jar
+COPY ${JAR_FILE} sumte.jar
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
   CMD curl -f http://localhost:8080/actuator/health || exit 1
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "sumte.jar"]
