@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,7 +25,9 @@ import com.sumte.guesthouse.entity.QOptionServices;
 import com.sumte.guesthouse.entity.QTargetAudience;
 import com.sumte.guesthouse.entity.mapping.QGuesthouseOptionServices;
 import com.sumte.guesthouse.entity.mapping.QGuesthouseTargetAudience;
+import com.sumte.reservation.converter.ReservationConverter;
 import com.sumte.reservation.entity.QReservation;
+import com.sumte.reservation.entity.ReservationStatus;
 import com.sumte.review.entity.QReview;
 import com.sumte.room.entity.QRoom;
 
@@ -35,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
+	private final ReservationConverter reservationConverter;
 
 	@Override
 	public Page<GuesthousePreviewDTO> searchFiltered(GuesthouseSearchRequestDTO dto, Pageable pageable) {
@@ -50,27 +53,24 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 
 		// 고정 조건들은 BooleanExpression으로 처리하는 게 좋다고 합니다.
 		// 동적 조건은 BooleanBuilder를 사용하여 처리
+		BooleanBuilder roomFilter = new BooleanBuilder();
 		BooleanBuilder condition = new BooleanBuilder();
 
-		BooleanBuilder roomFilter = new BooleanBuilder();
-
-		// 1차 필터링 -> 인원, 날짜
-		// 예약 날짜와 겹치는 예약 데이터를 가진 room을 거르기
-		// 2차 필터링 -> 인원, 날짜, 키워드
 		// StringUtils.hasText() : 공백만 있는 문자열, null값을 전부 false로 처리해줌.
-		if (StringUtils.hasText(dto.getKeyword())) {
-			String[] keywords = dto.getKeyword().split("\\s+");
-			BooleanBuilder keywordCondition = new BooleanBuilder();
-			for (String word : keywords) {
-				BooleanExpression name = guesthouse.name.containsIgnoreCase(word);
-				BooleanExpression region = guesthouse.addressRegion.containsIgnoreCase(word);
-				keywordCondition.or(name).or(region);
-			}
 
-			condition.and(keywordCondition);
+		if (dto.getViewEnableReservation()) {
+			SubQueryExpression<Long> reservedPeopleSum = JPAExpressions
+				.select(reservation.adultCount.add(reservation.childCount).sum().coalesce(0L))
+				.from(reservation)
+				.where(
+					reservation.room.id.eq(room.id),
+					reservation.reservationStatus.ne(ReservationStatus.CANCELED),
+					reservation.startDate.before(dto.getCheckOut()),
+					reservation.endDate.after(dto.getCheckIn())
+				);
+
+			roomFilter.and(room.totalCount.subtract(reservedPeopleSum).goe(dto.getPeople()));
 		}
-
-		// 3차 필터링 -> 가격대, 객실정원, 부가서비스, 이용대상, 지역 설정
 
 		if (dto.getMinPrice() != null && dto.getMaxPrice() != null) {
 			roomFilter.and(room.price.between(dto.getMinPrice(), dto.getMaxPrice()));
@@ -81,7 +81,34 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 		}
 
 		if (dto.getMaxPeople() != null) {
-			roomFilter.and(room.totalCount.loe(dto.getMaxPeople()));
+			roomFilter.and(room.totalCount.lt(dto.getMaxPeople()));
+		}
+
+		// roomFilter조건에 맞는 room.id 를 통해 guesthouse.id 를 추린다.
+		List<Long> validRoomIds = queryFactory
+			.select(room.id)
+			.from(room)
+			.where(roomFilter)
+			.fetch();
+
+		List<Long> validGuesthouseIds = queryFactory.select(room.guesthouse.id)
+			.from(room)
+			.where(room.id.in(validRoomIds))
+			.distinct()
+			.fetch();
+
+		// guesthouse 조건 마저 설정하기
+		condition.and(guesthouse.id.in(validGuesthouseIds));
+
+		if (StringUtils.hasText(dto.getKeyword())) {
+			String[] kewords = dto.getKeyword().split("\\s+");
+			BooleanBuilder keywordCondition = new BooleanBuilder();
+
+			for (String word : kewords) {
+				keywordCondition.or(guesthouse.name.containsIgnoreCase(word));
+				keywordCondition.or(guesthouse.addressRegion.containsIgnoreCase(word));
+			}
+			condition.and(keywordCondition);
 		}
 
 		if (dto.getRegion() != null && !dto.getRegion().isEmpty()) {
@@ -97,61 +124,39 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			));
 		}
 
-		// 입력 인원이 최대 인원보다 작아야 하는 조건
-		roomFilter.and(room.totalCount.goe(dto.getPeople()));
-
-		// 예약 일자 필터링
-		roomFilter.and(room.id.notIn(
-			JPAExpressions.select(reservation.room.id)
-				.from(reservation)
-				.where(reservation.startDate.before(dto.getCheckOut()) // 사용자가 원하는 체크아웃 보다 전에 시작되고
-					.and(reservation.endDate.after(dto.getCheckIn())) // 사용자가 원하는 체크인 보다 나중에 끝나는 예약이 있는 room.id를 거르기
-				)
-		));
-
-		// List<Long> availabeReservationRoomIds = queryFactory
-		// 	.select(room.id)
-		// 	.from(room)
-		// 	.where(roomFilter)
-		// 	.fetch();
-
 		if (dto.getTargetAudience() != null && !dto.getTargetAudience().isEmpty()) {
 			condition.and(guesthouse.id.in(
 				JPAExpressions.select(guesthouseTargetAudience.guesthouse.id)
 					.from(guesthouseTargetAudience)
-					.join(guesthouseTargetAudience.guesthouse, guesthouse)
+					.join(guesthouseTargetAudience.targetAudience, targetAudience)
 					.where(targetAudience.name.in(dto.getTargetAudience()))
 			));
 		}
 
-		// 리뷰 부분 필드만 따로 조회
-		// 리스트 순회보다 서브쿼리가 더 효율적이라 하여
-		List<Tuple> reviewStatics = queryFactory.select(
+		// 리뷰 통계 조회
+		Map<Long, Tuple> reviewStatMap = queryFactory.select(
 				room.guesthouse.id,
 				review.score.avg(),
 				review.id.count()
-			).from(review).join(review.room, room)
-			.where(room.id.in(
-				JPAExpressions
-					.select(room.id)
-					.from(room)
-					.where(roomFilter)
-			))
-			.fetch();
-
-		Map<Long, Tuple> reviewStatMap = reviewStatics.stream()
+			).from(review)
+			.join(review.room, room)
+			.where(room.id.in(validRoomIds))
+			.groupBy(room.guesthouse.id)
+			.fetch()
+			.stream()
 			.collect(Collectors.toMap(
-				tuple -> tuple.get(room.guesthouse.id),
+				t -> t.get(room.guesthouse.id),
 				Function.identity()
 			));
 
+		// Step 5. guesthouse 리스트 조회 (room도 조인하여 최소 가격 등 포함)
 		List<GuesthousePreviewDTO> guesthouses = queryFactory
 			.select(Projections.constructor(
 				GuesthousePreviewDTO.class,
 				guesthouse.id,
 				guesthouse.name,
-				Expressions.constant(0.0),       // 평균 점수는 나중에 덮어씀
-				Expressions.constant(0L),        // 리뷰 수는 나중에 덮어씀
+				Expressions.constant(0.0),
+				Expressions.constant(0L),
 				room.price.min(),
 				guesthouse.addressRegion,
 				room.checkin.min()
@@ -160,15 +165,17 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			.join(guesthouse.rooms, room)
 			.where(condition)
 			.groupBy(guesthouse.id)
+			.orderBy(review.id.count().desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
+		// Step 6. 리뷰 평균/갯수 덮어쓰기
 		guesthouses.forEach(preview -> {
 			Tuple stats = reviewStatMap.get(preview.getId());
 			if (stats != null) {
-				Double avg = stats.get(review.score.avg());
-				Long count = stats.get(review.id.count());
+				Double avg = stats.get(0, Double.class);
+				Long count = stats.get(1, Long.class);
 				preview.setAverageScore(avg != null ? avg : 0.0);
 				preview.setReviewCount(count != null ? count : 0L);
 			} else {
@@ -178,6 +185,5 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 		});
 
 		return new PageImpl<>(guesthouses, pageable, guesthouses.size());
-
 	}
 }

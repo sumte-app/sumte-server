@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GuesthouseSearchRequestDTO {
+
+	@NotNull
+	private Boolean viewEnableReservation;
+
 	@NotNull
 	@Schema(description = "체크인 날짜 (yyyy-MM-dd)", required = true)
 	private LocalDate checkIn;
