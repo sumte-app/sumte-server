@@ -1,7 +1,9 @@
 package com.sumte.room.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.apiPayload.ApiResponse;
@@ -75,13 +78,14 @@ public class RoomController {
 		return ApiResponse.successWithNoData();
 	}
 
-	@GetMapping("/{guesthouseId}/rooms")
-	@Operation(summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 숙소에 등록된 객실 목록을 반환합니다.")
-	@Parameter(name = "guesthouseId", description = "숙소 ID를 입력해주세요")
-	public ApiResponse<List<RoomResponseDTO.RoomSummary>> getRoomsByGuesthouseId(
-		@PathVariable Long guesthouseId
+	@GetMapping("/guesthouse/{guesthouseId}/rooms")
+	@Operation(summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준 예약 가능한 객실만 필터링하거나 전체 보여줄 수 있습니다.")
+	public ApiResponse<List<RoomResponseDTO.RoomSummary>> getRoomsByGuesthouse(
+		@PathVariable Long guesthouseId,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
 	) {
-		return ApiResponse.success(roomQueryService.getRoomsByGuesthouseId(guesthouseId));
+		return ApiResponse.success(roomQueryService.getRoomsByGuesthouse(guesthouseId, startDate, endDate));
 	}
 
 }

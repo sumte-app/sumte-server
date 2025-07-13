@@ -46,6 +46,7 @@ public class RoomResponseDTO {
 		private Long totalCount;
 		private LocalTime checkin;
 		private LocalTime checkout;
+		private boolean isReservable;
 	}
 
 }

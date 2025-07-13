@@ -37,7 +37,7 @@ public class RoomConverter {
 			.build();
 	}
 
-	public RoomResponseDTO.RoomSummary toRoomSummary(Room room) {
+	public RoomResponseDTO.RoomSummary toRoomSummary(Room room, boolean isReservable) {
 		return RoomResponseDTO.RoomSummary.builder()
 			.id(room.getId())
 			.name(room.getName())
@@ -47,6 +47,7 @@ public class RoomConverter {
 			.totalCount(room.getTotalCount())
 			.checkin(room.getCheckin())
 			.checkout(room.getCheckout())
+			.isReservable(isReservable)
 			.build();
 	}
 
