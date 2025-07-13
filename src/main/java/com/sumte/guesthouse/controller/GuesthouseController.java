@@ -75,4 +75,19 @@ public class GuesthouseController {
 		@PageableDefault(size = 10) Pageable pageable) {
 		return ApiResponse.success(guesthouseQueryService.getGuesthousesForHome(pageable));
 	}
+
+	@PatchMapping("/{guesthouseId}/advertisement/on")
+	@Operation(summary = "게스트하우스 광고 설정", description = "해당 게스트하우스를 광고 상태로 설정합니다.")
+	public ApiResponse<Void> activateAdvertisement(@PathVariable Long guesthouseId) {
+		guesthouseCommandService.activateAdvertisement(guesthouseId);
+		return ApiResponse.successWithNoData();
+	}
+
+	@PatchMapping("/{guesthouseId}/advertisement/off")
+	@Operation(summary = "게스트하우스 광고 해제", description = "해당 게스트하우스를 광고 상태에서 해제합니다.")
+	public ApiResponse<Void> deactivateAdvertisement(@PathVariable Long guesthouseId) {
+		guesthouseCommandService.deactivateAdvertisement(guesthouseId);
+		return ApiResponse.successWithNoData();
+	}
+	
 }

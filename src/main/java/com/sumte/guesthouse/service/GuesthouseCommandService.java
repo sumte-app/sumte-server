@@ -12,4 +12,10 @@ public interface GuesthouseCommandService {
 	GuesthouseResponseDTO.Update updateGuesthouse(Long id, GuesthouseRequestDTO.Update dto);
 
 	GuesthouseResponseDTO.delete deleteGuesthouse(Long guesthouseId);
+
+	@Transactional
+	void activateAdvertisement(Long guesthouseId);
+
+	@Transactional
+	void deactivateAdvertisement(Long guesthouseId);
 }
