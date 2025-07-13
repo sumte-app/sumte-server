@@ -14,7 +14,16 @@ public interface GuesthouseRepository extends JpaRepository<Guesthouse, Long> {
 
 	Optional<Guesthouse> findById(Long id);
 
-	//리뷰는 Page로 했는데 Slice로 수정해도 괜찮을거 같음 (확인 -> 전체 요소수는 필요없으니)
-	@Query("SELECT g FROM Guesthouse g ORDER BY " + "CASE WHEN g.advertisement = 'AD' THEN 0 ELSE 1 END, g.name ASC")
+	@Query("""
+		SELECT g FROM Guesthouse g
+		LEFT JOIN Review r ON r.room.guesthouse.id = g.id
+		GROUP BY g.id
+		ORDER BY 
+		    CASE WHEN g.advertisement = 'AD' THEN 0 ELSE 1 END,
+		    COUNT(r) DESC,
+		    COALESCE(AVG(r.score), 0) DESC
+		""")
+
+		//리뷰는 Page로 했는데 Slice로 수정해도 괜찮을거 같음 (확인 -> 전체 요소수는 필요없으니)
 	Slice<Guesthouse> findAllOrderedForHome(Pageable pageable);
 }
