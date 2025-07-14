@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,7 +72,7 @@ public class GuesthouseController {
 
 	}
 
-	@GetMapping("/search")
+	@PostMapping("/search")
 	@Operation(summary = "게스트 하우스 필터링 조회", description = "게스트 하우스를 검색 조건에 맞게 조회합니다.")
 	@Parameters({
 		@Parameter(name = "page", description = "몇 번째 페이지를 조회할지 입력해주세요(1 이상의 정수)"),
@@ -83,7 +82,7 @@ public class GuesthouseController {
 		@RequestBody @Valid GuesthouseSearchRequestDTO dto,
 		@CheckPage @RequestParam(name = "page", defaultValue = "1") int page,
 		@CheckPageSize @RequestParam(name = "size", defaultValue = "10") int size) {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<GuesthousePreviewDTO> result = guesthouseQueryService.getFilteredGuesthouse(dto, pageable);
 		return ResponseEntity.ok(ApiResponse.success(result));
 

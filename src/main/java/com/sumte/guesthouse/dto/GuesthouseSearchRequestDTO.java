@@ -54,5 +54,6 @@ public class GuesthouseSearchRequestDTO {
 
 	@Schema(description = "지역 키워드를 선택하여 ", required = false)
 	private List<String> region;
+
 }
 

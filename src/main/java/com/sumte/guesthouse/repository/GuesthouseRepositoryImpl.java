@@ -1,9 +1,6 @@
 package com.sumte.guesthouse.repository;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,10 +9,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
@@ -58,6 +55,19 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 
 		// StringUtils.hasText() : 공백만 있는 문자열, null값을 전부 false로 처리해줌.
 
+		// if (dto.getViewEnableReservation()) {
+		// 	SubQueryExpression<Long> reservedPeopleSum = JPAExpressions
+		// 		.select(reservation.adultCount.add(reservation.childCount).sum().coalesce(0L))
+		// 		.from(reservation)
+		// 		.where(
+		// 			reservation.room.id.eq(room.id),
+		// 			reservation.reservationStatus.ne(ReservationStatus.CANCELED),
+		// 			reservation.startDate.before(dto.getCheckOut()),
+		// 			reservation.endDate.after(dto.getCheckIn())
+		// 		);
+		//
+		// 	roomFilter.and(room.totalCount.subtract(reservedPeopleSum).goe(dto.getPeople()));
+		// }
 		if (dto.getViewEnableReservation()) {
 			SubQueryExpression<Long> reservedPeopleSum = JPAExpressions
 				.select(reservation.adultCount.add(reservation.childCount).sum().coalesce(0L))
@@ -69,7 +79,24 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 					reservation.endDate.after(dto.getCheckIn())
 				);
 
-			roomFilter.and(room.totalCount.subtract(reservedPeopleSum).goe(dto.getPeople()));
+			BooleanBuilder reservationCondition = new BooleanBuilder();
+			reservationCondition.or(
+				JPAExpressions
+					.selectOne()
+					.from(reservation)
+					.where(
+						reservation.room.id.eq(room.id),
+						reservation.reservationStatus.ne(ReservationStatus.CANCELED),
+						reservation.startDate.before(dto.getCheckOut()),
+						reservation.endDate.after(dto.getCheckIn())
+					)
+					.notExists()
+			);
+			reservationCondition.or(
+				room.totalCount.subtract(reservedPeopleSum).goe(dto.getPeople())
+			);
+
+			roomFilter.and(reservationCondition);
 		}
 
 		if (dto.getMinPrice() != null && dto.getMaxPrice() != null) {
@@ -91,11 +118,21 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			.where(roomFilter)
 			.fetch();
 
+		System.out.println("validRoomIds = " + validRoomIds);
+
 		List<Long> validGuesthouseIds = queryFactory.select(room.guesthouse.id)
 			.from(room)
 			.where(room.id.in(validRoomIds))
 			.distinct()
 			.fetch();
+
+		System.out.println("validGuesthouseIds = " + validGuesthouseIds);
+
+		if (validGuesthouseIds.isEmpty()) {
+			System.out.println("guesthouse 조건에 맞는 게 없음");
+		} else {
+			System.out.println("guesthouse 조건에 맞는 것 있음: " + validGuesthouseIds);
+		}
 
 		// guesthouse 조건 마저 설정하기
 		condition.and(guesthouse.id.in(validGuesthouseIds));
@@ -133,56 +170,60 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			));
 		}
 
-		// 리뷰 통계 조회
-		Map<Long, Tuple> reviewStatMap = queryFactory.select(
-				room.guesthouse.id,
-				review.score.avg(),
-				review.id.count()
-			).from(review)
-			.join(review.room, room)
-			.where(room.id.in(validRoomIds))
-			.groupBy(room.guesthouse.id)
-			.fetch()
-			.stream()
-			.collect(Collectors.toMap(
-				t -> t.get(room.guesthouse.id),
-				Function.identity()
-			));
+		// List<GuesthousePreviewDTO> guesthouses = queryFactory
+		// 	.select(Projections.constructor(
+		// 		GuesthousePreviewDTO.class,
+		// 		guesthouse.id,
+		// 		guesthouse.name,
+		// 		// review.score.avg().coalesce(0.0),
+		// 		// review.id.count().coalesce(0L),
+		// 		JPAExpressions.select(
+		// 			Expressions.numberTemplate(Double.class, "coalesce(avg({0}), {1})", review.score, 0.0)
+		// 		).from(review).where(review.room.guesthouse.id.eq(guesthouse.id)),
+		//
+		// 		JPAExpressions.select(
+		// 			Expressions.numberTemplate(Long.class, "coalesce(count({0}), {1})", review.id, 0L)
+		// 		).from(review).where(review.room.guesthouse.id.eq(guesthouse.id)),
+		// 		Expressions.numberTemplate(Long.class, "min({0})", room.price),
+		// 		guesthouse.addressRegion,
+		// 		room.checkin.min()
+		// 	))
+		// 	.from(room)
+		// 	.join(room.guesthouse, guesthouse)
+		// 	.leftJoin(review).on(review.room.id.eq(room.id))
+		// 	.where(condition)
+		// 	.groupBy(guesthouse.id)
+		// 	.orderBy(review.id.count().desc())
+		// 	.offset(pageable.getOffset())
+		// 	.limit(pageable.getPageSize())
+		// 	.fetch();
+		NumberTemplate<Double> avgScore = Expressions.numberTemplate(Double.class,
+			"coalesce((select avg(r.score) from Review r where r.room.guesthouse.id = {0}), {1})",
+			guesthouse.id, 0.0);
 
-		// Step 5. guesthouse 리스트 조회 (room도 조인하여 최소 가격 등 포함)
+		NumberTemplate<Long> reviewCount = Expressions.numberTemplate(Long.class,
+			"coalesce((select count(r.id) from Review r where r.room.guesthouse.id = {0}), {1})",
+			guesthouse.id, 0L);
+
 		List<GuesthousePreviewDTO> guesthouses = queryFactory
 			.select(Projections.constructor(
 				GuesthousePreviewDTO.class,
 				guesthouse.id,
 				guesthouse.name,
-				Expressions.constant(0.0),
-				Expressions.constant(0L),
-				room.price.min(),
+				avgScore,
+				reviewCount,
+				Expressions.numberTemplate(Long.class, "min({0})", room.price),
 				guesthouse.addressRegion,
 				room.checkin.min()
 			))
-			.from(guesthouse)
-			.join(guesthouse.rooms, room)
+			.from(room)
+			.join(room.guesthouse, guesthouse)
 			.where(condition)
-			.groupBy(guesthouse.id)
-			.orderBy(review.id.count().desc())
+			.groupBy(guesthouse.id, guesthouse.name, guesthouse.addressRegion)
+			.orderBy(reviewCount.desc()) // ← SubQuery로 만든 count를 기준으로 정렬
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
-
-		// Step 6. 리뷰 평균/갯수 덮어쓰기
-		guesthouses.forEach(preview -> {
-			Tuple stats = reviewStatMap.get(preview.getId());
-			if (stats != null) {
-				Double avg = stats.get(0, Double.class);
-				Long count = stats.get(1, Long.class);
-				preview.setAverageScore(avg != null ? avg : 0.0);
-				preview.setReviewCount(count != null ? count : 0L);
-			} else {
-				preview.setAverageScore(0.0);
-				preview.setReviewCount(0L);
-			}
-		});
 
 		return new PageImpl<>(guesthouses, pageable, guesthouses.size());
 	}
