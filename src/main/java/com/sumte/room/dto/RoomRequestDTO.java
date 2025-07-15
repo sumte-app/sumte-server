@@ -10,7 +10,7 @@ import lombok.Getter;
 
 public class RoomRequestDTO {
 	@Getter
-	public static class Register {
+	public static class RegisterRoom {
 		@NotBlank(message = "이름을 입력해주세요")
 		String name;
 
@@ -38,7 +38,7 @@ public class RoomRequestDTO {
 	}
 
 	@Getter
-	public static class Update {
+	public static class UpdateRoom {
 		String name;
 		String content;
 		Long price;

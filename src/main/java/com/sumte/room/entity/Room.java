@@ -37,7 +37,7 @@ public class Room extends BaseTimeEntity {
 	private Long totalCount;
 	private String imageUrl;
 
-	public static Room createRoomEntity(RoomRequestDTO.Register dto) {
+	public static Room createRoomEntity(RoomRequestDTO.RegisterRoom dto) {
 		Room room = new Room();
 		room.name = dto.getName();
 		room.contents = dto.getContent();
