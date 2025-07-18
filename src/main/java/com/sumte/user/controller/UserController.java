@@ -3,6 +3,8 @@ package com.sumte.user.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +15,7 @@ import com.sumte.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,5 +44,16 @@ public class UserController {
 		@UserId Long userId) {
 		userService.deactivateUser(userId);
 		return ResponseEntity.ok(ApiResponse.successWithNoData());
+	}
+
+	//닉네임 중복확인
+	@PatchMapping("/nickname")
+	@Operation(summary = "닉네임 수정 API", description = "사용자의 닉네임을 수정합니다.")
+	public ResponseEntity<Void> updateNickname(
+		@RequestBody @Valid com.sumte.user.dto.UserNicknameUpdateRequest request,
+		@UserId Long userId
+	) {
+		userService.updateNickname(userId, request.nickname());
+		return ResponseEntity.ok().build();
 	}
 }
