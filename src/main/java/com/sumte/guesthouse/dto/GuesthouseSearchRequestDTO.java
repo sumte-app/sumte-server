@@ -52,7 +52,7 @@ public class GuesthouseSearchRequestDTO {
 	@Schema(description = "원하는 이용대상을 조회후 해당 목록에 있는 값들 중 원하는 것들을 list형태로 입력", required = false)
 	private List<String> targetAudience;
 
-	@Schema(description = "지역 키워드를 선택하여 ", required = false)
+	@Schema(description = "지역 키워드를 선택하여 list형태로 입력 (피그마에 나와있는 키워드 그대로 입력) ", required = false)
 	private List<String> region;
 
 }

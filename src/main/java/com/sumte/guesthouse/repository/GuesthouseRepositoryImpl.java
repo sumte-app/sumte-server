@@ -149,7 +149,11 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 		}
 
 		if (dto.getRegion() != null && !dto.getRegion().isEmpty()) {
-			condition.and(guesthouse.addressRegion.in(dto.getRegion()));
+			List<String> regions = dto.getRegion();
+
+			if (!regions.contains("제주도 전체")) {
+				condition.and(guesthouse.addressRegion.in(regions));
+			}
 		}
 
 		if (dto.getOptionService() != null && !dto.getOptionService().isEmpty()) {
