@@ -35,4 +35,19 @@ public class UserService {
 
 		user.deactivate();
 	}
+
+	// 닉네임 수정
+	@Transactional
+	public void updateNickname(Long userId, String nickname) {
+		// 중복검사를 위함
+		userRepository.findByNickname(nickname).ifPresent(user -> {
+			throw new SumteException(CommonErrorCode.DUPLICATE_NICKNAME);
+		});
+
+		// 사용자 조회해서 닉네임 변경하기
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
+
+		user.updateNickname(nickname);
+	}
 }
