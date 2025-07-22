@@ -3,6 +3,9 @@ package com.sumte.reservation.service;
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.code.error.ReservationErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.payment.entity.Payment;
+import com.sumte.payment.entity.PaymentStatus;
+import com.sumte.payment.repository.PaymentRepository;
 import com.sumte.reservation.entity.ReservationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +24,10 @@ import com.sumte.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
@@ -29,6 +36,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ReservationConverter reservationConverter;
 	private final RoomRepository roomRepository;
 	private final UserRepository userRepository;
+	private final PaymentRepository paymentRepository;
 
 	@Override
 	@Transactional
@@ -96,6 +104,26 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new SumteException(ReservationErrorCode.ALREADY_CANCELED);
 		}
 		reservation.cancel();
+	}
+
+	@Override
+	@Transactional
+	public void updateCompletedReservations() {
+		LocalDate today = LocalDate.now();
+
+		List<Reservation> reservations = reservationRepository.findByReservationStatusNotAndEndDateBefore(ReservationStatus.COMPLETED, today);
+		for (Reservation reservation : reservations) {
+			Optional<Payment> paymentOpt = paymentRepository.findByReservation(reservation);
+
+			boolean isPaid = paymentOpt
+					.map(Payment::getPaymentStatus)
+					.filter(status -> status == PaymentStatus.PAID)
+					.isPresent();
+
+			if (isPaid) {
+				reservation.complete();
+			}
+		}
 	}
 
 }

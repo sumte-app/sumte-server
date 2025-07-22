@@ -1,5 +1,6 @@
 package com.sumte.reservation.repository;
 
+import com.sumte.reservation.entity.ReservationStatus;
 import com.sumte.room.entity.Room;
 import com.sumte.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     @Query("""
@@ -25,5 +27,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 	Page<Reservation> findAllByUser(User user, Pageable pageable);
 
+	List<Reservation> findByReservationStatusNotAndEndDateBefore(ReservationStatus status, LocalDate beforeDate);
 
 }
