@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.security.authorization.UserId;
+import com.sumte.user.dto.UserNicknameUpdateRequest;
 import com.sumte.user.dto.response.UserInfoResponse;
 import com.sumte.user.service.UserService;
 
@@ -50,7 +51,7 @@ public class UserController {
 	@PatchMapping("/nickname")
 	@Operation(summary = "닉네임 수정 API", description = "사용자의 닉네임을 수정합니다.")
 	public ResponseEntity<Void> updateNickname(
-		@RequestBody @Valid com.sumte.user.dto.UserNicknameUpdateRequest request,
+		@RequestBody @Valid UserNicknameUpdateRequest request,
 		@UserId Long userId
 	) {
 		userService.updateNickname(userId, request.nickname());
