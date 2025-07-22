@@ -7,6 +7,7 @@ import com.sumte.payment.entity.Payment;
 import com.sumte.payment.entity.PaymentStatus;
 import com.sumte.payment.repository.PaymentRepository;
 import com.sumte.reservation.entity.ReservationStatus;
+import com.sumte.review.repository.ReviewRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final RoomRepository roomRepository;
 	private final UserRepository userRepository;
 	private final PaymentRepository paymentRepository;
+	private final ReviewRepository reviewRepository;
 
 	@Override
 	@Transactional
@@ -74,7 +76,14 @@ public class ReservationServiceImpl implements ReservationService {
 				.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
 
 		Page<Reservation> reservations = reservationRepository.findAllByUser(user, pageable);
-		return reservations.map(reservationConverter::toMyReservationDTO);
+		return reservations.map(reservation -> {
+			boolean isComplete = reservation.getReservationStatus().equals(ReservationStatus.COMPLETED);
+
+			boolean reviewWritten = reviewRepository.existsByUserIdAndRoomGuesthouseId(user.getId(), reservation.getRoom().getGuesthouse().getId());
+			boolean canWriteReview = isComplete && !reviewWritten;
+
+			return reservationConverter.toMyReservationDTO(reservation,canWriteReview,reviewWritten);
+		});
 	}
 
 	@Override
