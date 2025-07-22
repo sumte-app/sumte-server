@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class ReservationStatusScheduler {
     private final ReservationService reservationService;
 
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void autoUpdateCompletedReservations() {
         reservationService.updateCompletedReservations();
     }

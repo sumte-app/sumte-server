@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,9 +111,17 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	public void updateCompletedReservations() {
 		LocalDate today = LocalDate.now();
+		LocalTime now = LocalTime.now();
 
-		List<Reservation> reservations = reservationRepository.findByReservationStatusNotAndEndDateBefore(ReservationStatus.COMPLETED, today);
+		List<Reservation> reservations = reservationRepository.findByReservationStatusNot(ReservationStatus.COMPLETED);
 		for (Reservation reservation : reservations) {
+			LocalDate endDate = reservation.getEndDate();
+			LocalTime checkoutTime = reservation.getRoom().getCheckout();
+
+			boolean isAfterCheckout = endDate.isBefore(today) || (endDate.isEqual(today) && checkoutTime.isBefore(now));
+
+			if (!isAfterCheckout) continue;
+
 			Optional<Payment> paymentOpt = paymentRepository.findByReservation(reservation);
 
 			boolean isPaid = paymentOpt

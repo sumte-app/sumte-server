@@ -27,6 +27,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 	Page<Reservation> findAllByUser(User user, Pageable pageable);
 
-	List<Reservation> findByReservationStatusNotAndEndDateBefore(ReservationStatus status, LocalDate beforeDate);
+	List<Reservation> findByReservationStatusNot(ReservationStatus status);
 
 }
