@@ -33,7 +33,7 @@ public class S3FileUploadService {
 		GeneratePresignedUrlRequest generatePresignedUrlRequest =
 			new GeneratePresignedUrlRequest(bucket, fileName)
 				.withMethod(HttpMethod.PUT)
-				.withExpiration(expiration)
+				.withExpiration(expiration);
 				//.withContentType(contentType);
 
 		// Presigned URL 생성
