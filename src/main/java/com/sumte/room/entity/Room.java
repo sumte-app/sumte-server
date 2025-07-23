@@ -44,7 +44,7 @@ public class Room extends BaseTimeEntity {
 		room.price = dto.getPrice();
 		room.checkin = dto.getCheckin();
 		room.checkout = dto.getCheckout();
-		room.standardCount = dto.getStandartCount();
+		room.standardCount = dto.getStandardCount();
 		room.totalCount = dto.getTotalCount();
 		room.imageUrl = dto.getImageUrl();
 		return room;

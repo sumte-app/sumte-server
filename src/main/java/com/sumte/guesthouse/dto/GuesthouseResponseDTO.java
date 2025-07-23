@@ -2,6 +2,9 @@ package com.sumte.guesthouse.dto;
 
 import java.util.List;
 
+import com.sumte.guesthouse.entity.AdType;
+import com.sumte.room.dto.RoomResponseDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +41,24 @@ public class GuesthouseResponseDTO {
 	public static class delete {
 		String name;
 		String addressDetail;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class GetHouseResponse {
+		String name;
+		String addressRegion;
+		String addressDetail;
+		String information;
+		String imageUrl;
+		AdType advertisement;
+
+		List<String> optionServices;
+		List<String> targetAudience;
+		List<RoomResponseDTO.GetRoomResponse> rooms;
+
 	}
 
 }

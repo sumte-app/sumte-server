@@ -1,6 +1,8 @@
 package com.sumte.room.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.room.dto.RoomRequestDTO;
+import com.sumte.room.dto.RoomResponseDTO;
 import com.sumte.room.service.RoomCommandService;
+import com.sumte.room.service.RoomQueryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/guesthouse")
 public class RoomController {
 	private final RoomCommandService roomCommandService;
+	private final RoomQueryService roomQueryService;
 
 	@PostMapping("/{guesthouseId}/room")
 	@Operation(summary = "방 추가 api", description = "숙소에 방을 추가하는 api 입니다.")
@@ -67,6 +72,18 @@ public class RoomController {
 	) {
 		roomCommandService.updateRoom(dto, guesthouseId, roomId);
 		return ApiResponse.successWithNoData();
+	}
+
+	@GetMapping("/room/{roomId}")
+	@Operation(summary = "방 조회", description = "id기반으로 room을 조회하는 api입니다")
+	@Parameters({
+		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
+	})
+	public ResponseEntity<ApiResponse<RoomResponseDTO.GetRoomResponse>> getRoom(
+		@PathVariable Long roomId
+	) {
+		RoomResponseDTO.GetRoomResponse result = roomQueryService.getRoomById(roomId);
+		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 }
