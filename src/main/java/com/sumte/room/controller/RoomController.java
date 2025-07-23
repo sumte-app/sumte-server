@@ -1,16 +1,24 @@
 package com.sumte.room.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.room.dto.RoomRequestDTO;
+import com.sumte.room.dto.RoomResponseDTO;
 import com.sumte.room.service.RoomCommandService;
+import com.sumte.room.service.RoomQueryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/guesthouse")
 public class RoomController {
 	private final RoomCommandService roomCommandService;
+	private final RoomQueryService roomQueryService;
 
 	@PostMapping("/{guesthouseId}/room")
 	@Operation(summary = "방 추가 api", description = "숙소에 방을 추가하는 api 입니다.")
@@ -67,6 +76,16 @@ public class RoomController {
 	) {
 		roomCommandService.updateRoom(dto, guesthouseId, roomId);
 		return ApiResponse.successWithNoData();
+	}
+
+	@GetMapping("/guesthouse/{guesthouseId}/rooms")
+	@Operation(summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준 예약 가능한 객실만 필터링하거나 전체 보여줄 수 있습니다.")
+	public ApiResponse<List<RoomResponseDTO.RoomSummary>> getRoomsByGuesthouse(
+		@PathVariable Long guesthouseId,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+	) {
+		return ApiResponse.success(roomQueryService.getRoomsByGuesthouse(guesthouseId, startDate, endDate));
 	}
 
 }

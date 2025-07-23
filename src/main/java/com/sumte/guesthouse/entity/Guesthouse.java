@@ -71,4 +71,12 @@ public class Guesthouse extends BaseTimeEntity {
 		this.information = information;
 	}
 
+	public void activateAd() {
+		this.advertisement = AdType.AD;
+	}
+
+	public void deactivateAd() {
+		this.advertisement = AdType.NON_AD;
+	}
+
 }
