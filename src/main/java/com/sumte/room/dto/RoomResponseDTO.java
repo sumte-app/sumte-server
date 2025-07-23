@@ -38,6 +38,7 @@ public class RoomResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class GetRoomResponse {
+		Long id;
 		String name;
 		Long price;
 		Long standardCount;

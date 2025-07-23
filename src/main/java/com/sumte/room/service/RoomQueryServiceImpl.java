@@ -25,6 +25,7 @@ public class RoomQueryServiceImpl implements RoomQueryService {
 		);
 
 		return RoomResponseDTO.GetRoomResponse.builder()
+			.id(room.getId())
 			.name(room.getName())
 			.checkin(room.getCheckin())
 			.checkout(room.getCheckout())
