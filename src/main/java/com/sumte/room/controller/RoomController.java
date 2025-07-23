@@ -33,7 +33,7 @@ public class RoomController {
 	})
 	public ApiResponse<Void> registerRoom(
 		@PathVariable Long guesthouseId,
-		@RequestBody @Valid RoomRequestDTO.Register dto) {
+		@RequestBody @Valid RoomRequestDTO.RegisterRoom dto) {
 		roomCommandService.registerRoom(dto, guesthouseId);
 
 		return ApiResponse.successWithNoData();
@@ -63,7 +63,7 @@ public class RoomController {
 	})
 	public ApiResponse<Void> updateRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId,
-		@RequestBody @Valid RoomRequestDTO.Update dto
+		@RequestBody @Valid RoomRequestDTO.UpdateRoom dto
 	) {
 		roomCommandService.updateRoom(dto, guesthouseId, roomId);
 		return ApiResponse.successWithNoData();
