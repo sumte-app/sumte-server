@@ -51,4 +51,5 @@ public class Reservation extends BaseTimeEntity {
 	public void cancel() {
 		this.reservationStatus = ReservationStatus.CANCELED;
 	}
+	public void complete() {this.reservationStatus = ReservationStatus.COMPLETED;}
 }

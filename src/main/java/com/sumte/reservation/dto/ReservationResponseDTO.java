@@ -1,5 +1,6 @@
 package com.sumte.reservation.dto;
 
+import com.sumte.reservation.entity.ReservationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +31,10 @@ public class ReservationResponseDTO {
 		private Long adultCount;
 		private Long childCount;
 		private int nightCount;
-		private String status;
+		private ReservationStatus status;
+
+		private boolean canWriteReview;
+		private boolean reviewWritten;
 	}
 
 	@Builder

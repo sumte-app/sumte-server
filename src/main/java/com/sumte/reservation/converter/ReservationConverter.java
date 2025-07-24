@@ -33,7 +33,7 @@ public class ReservationConverter {
 			.build();
 	}
 
-	public ReservationResponseDTO.MyReservationDTO toMyReservationDTO(Reservation reservation) {
+	public ReservationResponseDTO.MyReservationDTO toMyReservationDTO(Reservation reservation, boolean canWriteReview, boolean reviewWritten) {
 		Room room = reservation.getRoom();
 		Guesthouse guestHouse = room.getGuesthouse();
 		int nightCount = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
@@ -48,7 +48,9 @@ public class ReservationConverter {
 				.adultCount(reservation.getAdultCount())
 				.childCount(reservation.getChildCount())
 				.nightCount(nightCount)
-				.status(reservation.getReservationStatus().name())
+				.status(reservation.getReservationStatus())
+				.canWriteReview(canWriteReview)
+				.reviewWritten(reviewWritten)
 				.build();
 	}
 
