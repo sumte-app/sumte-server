@@ -3,10 +3,10 @@ package com.sumte.payment.service;
 import com.sumte.apiPayload.code.error.PaymentErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
 import com.sumte.payment.converter.PaymentConverter;
-import com.sumte.payment.dto.PaymentRequestDTO;
-import com.sumte.payment.dto.PaymentResponseDTO;
+import com.sumte.payment.dto.*;
 import com.sumte.payment.entity.Payment;
 import com.sumte.payment.entity.PaymentStatus;
+import com.sumte.payment.kakaopay.KakaoPayClient;
 import com.sumte.payment.repository.PaymentRepository;
 import com.sumte.reservation.entity.Reservation;
 import com.sumte.reservation.repository.ReservationRepository;
@@ -21,6 +21,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentTransactionHelper transactionHelper;
+    private final KakaoPayClient kakaoPayClient;
 
     @Override
     @Transactional
@@ -36,13 +37,28 @@ public class PaymentServiceImpl implements PaymentService {
         }
         paymentRepository.save(payment);
 
-        String paymentUrl = "https://pay.mock.kakao.com/" + payment.getId();
-        return PaymentConverter.toCreateResponse(payment, paymentUrl);
+        KakaoPayReadyRequestDTO request = KakaoPayReadyRequestDTO.builder()
+                .cid("TC0ONETIME")
+                .partner_order_id("test_order1")
+                .partner_user_id("test_user1")
+                .item_name("테스트_숨터")
+                .quantity("1")
+                .total_amount("1000")
+                .tax_free_amount("0")
+                .approval_url("http://localhost:8080/pay/success")
+                .cancel_url("http://localhost:8080/pay/cancel")
+                .fail_url("http://localhost:8080/pay/fail")
+                .build();
+
+        KakaoPayReadyResponseDTO kakaoResponse = kakaoPayClient.requestPayment(request);
+        payment.setTid(kakaoResponse.getTid());
+
+        return PaymentConverter.toCreateResponse(payment, kakaoResponse.getNext_redirect_pc_url());
     }
 
     @Override
     @Transactional
-    public void approvePayment(Long paymentId, String pgToken) {
+    public KakaoPayApproveResponseDTO approvePayment(Long paymentId, String pgToken) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new SumteException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 
@@ -55,7 +71,17 @@ public class PaymentServiceImpl implements PaymentService {
             throw new SumteException(PaymentErrorCode.PG_TOKEN_MISSING);
         }
 
-        payment.markAsPaid();
-    }
+        KakaoPayApproveRequestDTO request = KakaoPayApproveRequestDTO.builder()
+                .cid("TC0ONETIME")
+                .tid(payment.getTid())
+                .partner_order_id("test_order1")
+                .partner_user_id("test_user1")
+                .pg_token(pgToken)
+                .build();
 
+        KakaoPayApproveResponseDTO response = kakaoPayClient.approvePayment(request);
+        payment.markAsPaid();
+
+        return response;
+    }
 }

@@ -1,6 +1,7 @@
 package com.sumte.payment.controller;
 
 import com.sumte.apiPayload.ApiResponse;
+import com.sumte.payment.dto.KakaoPayApproveResponseDTO;
 import com.sumte.payment.dto.PaymentRequestDTO;
 import com.sumte.payment.dto.PaymentResponseDTO;
 import com.sumte.payment.service.PaymentService;
@@ -33,11 +34,11 @@ public class PaymentController {
             summary = "결제 승인 처리 API",
             description = "PG사(예: 카카오페이) 결제 완료 후, 해당 결제 ID의 상태를 PAID로 변경합니다."
     )
-    public ResponseEntity<ApiResponse<Void>> approvePayment(
+    public ResponseEntity<ApiResponse<KakaoPayApproveResponseDTO>> approvePayment(
             @PathVariable("id") Long id,
             @RequestParam("pg_token") String pgToken) {
 
-        paymentService.approvePayment(id, pgToken);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        KakaoPayApproveResponseDTO response = paymentService.approvePayment(id, pgToken);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
