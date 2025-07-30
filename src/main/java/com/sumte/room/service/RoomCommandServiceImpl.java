@@ -24,7 +24,7 @@ public class RoomCommandServiceImpl implements RoomCommandService {
 	private final GuesthouseRepository guesthouseRepository;
 
 	@Override
-	public RoomResponseDTO.Register registerRoom(RoomRequestDTO.Register dto, Long guesthouseId) {
+	public RoomResponseDTO.Registered registerRoom(RoomRequestDTO.RegisterRoom dto, Long guesthouseId) {
 		Room registerRoom = roomConverter.toRegisterEntity(dto);
 		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
 			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
@@ -38,12 +38,12 @@ public class RoomCommandServiceImpl implements RoomCommandService {
 			});
 
 		roomRepository.save(registerRoom);
-		RoomResponseDTO.Register result = roomConverter.toRegisterDTO(registerRoom);
+		RoomResponseDTO.Registered result = roomConverter.toRegisterDTO(registerRoom);
 		return result;
 	}
 
 	@Override
-	public RoomResponseDTO.Delete deleteRoom(Long roomId, Long guesthouseId) {
+	public RoomResponseDTO.Deleted deleteRoom(Long roomId, Long guesthouseId) {
 		Room room = roomRepository.findById(roomId)
 			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
 
@@ -54,7 +54,7 @@ public class RoomCommandServiceImpl implements RoomCommandService {
 
 	@Override
 	@Transactional
-	public RoomResponseDTO.Update updateRoom(RoomRequestDTO.Update dto, Long guesthouseId, Long roomId) {
+	public RoomResponseDTO.Updated updateRoom(RoomRequestDTO.UpdateRoom dto, Long guesthouseId, Long roomId) {
 		Room room = roomRepository.findById(roomId)
 			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST_ROOM));
 

@@ -3,14 +3,19 @@ package com.sumte.guesthouse.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
+import com.sumte.guesthouse.dto.GuesthouseSearchRequestDTO;
 import com.sumte.guesthouse.entity.Guesthouse;
 import com.sumte.guesthouse.repository.GuesthouseOptionServicesRepository;
 import com.sumte.guesthouse.repository.GuesthouseRepository;
+import com.sumte.guesthouse.repository.GuesthouseRepositoryCustom;
 import com.sumte.guesthouse.repository.GuesthouseTargetAudienceRepository;
 import com.sumte.room.dto.RoomResponseDTO;
 
@@ -20,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
-
 	private final GuesthouseRepository guesthouseRepository;
 	private final GuesthouseTargetAudienceRepository guesthouseTargetAudienceRepository;
 	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
@@ -62,4 +66,14 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 			.rooms(roomDtos)
 			.build();
 	}
+
+	private final GuesthouseRepositoryCustom guesthouseRepositoryCustom;
+
+	@Override
+	@Transactional
+	public Page<GuesthousePreviewDTO> getFilteredGuesthouse(GuesthouseSearchRequestDTO dto, Pageable pageable) {
+
+		return guesthouseRepositoryCustom.searchFiltered(dto, pageable);
+	}
+
 }
