@@ -51,6 +51,7 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 			.collect(Collectors.toList());
 
 		return GuesthouseResponseDTO.GetHouseResponse.builder()
+			.id(guesthouse.getId())
 			.name(guesthouse.getName())
 			.addressDetail(guesthouse.getAddressDetail())
 			.addressRegion(guesthouse.getAddressRegion())

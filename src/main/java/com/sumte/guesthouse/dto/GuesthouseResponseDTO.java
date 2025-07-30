@@ -16,9 +16,8 @@ public class GuesthouseResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Register {
-
+		Long id;
 		String name;
-		String addressRegion;
 	}
 
 	@Builder
@@ -26,6 +25,7 @@ public class GuesthouseResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Update {
+		Long id;
 		String name;
 		String addressRegion;
 		String addressDetail;
@@ -48,6 +48,7 @@ public class GuesthouseResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class GetHouseResponse {
+		Long id;
 		String name;
 		String addressRegion;
 		String addressDetail;

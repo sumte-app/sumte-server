@@ -34,11 +34,11 @@ public class GuesthouseController {
 
 	@Operation(summary = "게스트하우스 등록", description = "게스트하우스를 등록합니다.")
 	@PostMapping
-	public ApiResponse<Void> registerGuesthouse(
+	public ResponseEntity<ApiResponse<GuesthouseResponseDTO.Register>> registerGuesthouse(
 		@RequestBody @Valid GuesthouseRequestDTO.Register dto) {
-		guesthouseCommandService.registerGuesthouse(dto);
+		GuesthouseResponseDTO.Register result = guesthouseCommandService.registerGuesthouse(dto);
 
-		return ApiResponse.successWithNoData();
+		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 	@DeleteMapping("/{guesthouseId}")
