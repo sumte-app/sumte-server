@@ -43,6 +43,8 @@ public class RoomQueryServiceImpl implements RoomQueryService {
 			.standardCount(room.getStandardCount())
 			.totalCount(room.getTotalCount())
 			.build();
+	}
+
 	public List<RoomResponseDTO.RoomSummary> getRoomsByGuesthouse(Long guesthouseId, LocalDate startDate,
 		LocalDate endDate) {
 		List<Room> rooms = roomRepository.findAllByGuesthouseId(guesthouseId);
