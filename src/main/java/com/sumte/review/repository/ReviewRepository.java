@@ -18,4 +18,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	//내가 작성한 리뷰 조회 (단순 내가 작성한 리뷰만 조회하는거라 넣었는데 다시 확인(중복) )
 	Page<Review> findAllByUserId(Long userId, Pageable pageable);
+
+	boolean existsByUserIdAndRoomGuesthouseId(Long userId, Long roomGuesthouseId);
 }
