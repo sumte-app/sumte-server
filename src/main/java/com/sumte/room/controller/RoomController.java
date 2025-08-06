@@ -1,10 +1,10 @@
 package com.sumte.room.controller;
 
-import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -92,7 +92,10 @@ public class RoomController {
 	}
 
 	@GetMapping("/guesthouse/{guesthouseId}/rooms")
-	@Operation(summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준 예약 가능한 객실만 필터링하거나 전체 보여줄 수 있습니다.")
+	// @Operation(summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준 예약 가능한 객실만 필터링하거나 전체 보여줄 수 있습니다.")
+	@Operation(
+		summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준으로 예약 가능한 객실만 필터링하거나 전체를 조회할 수 있습니다.\n각 방마다 예약 가능 여부가 포함되어 응답됩니다."
+	)
 	public ApiResponse<List<RoomResponseDTO.RoomSummary>> getRoomsByGuesthouse(
 		@PathVariable Long guesthouseId,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
