@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import com.sumte.apiPayload.exception.annotation.CheckPage;
 import com.sumte.apiPayload.exception.annotation.CheckPageSize;
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
+import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
 import com.sumte.guesthouse.dto.GuesthouseSearchRequestDTO;
 import com.sumte.guesthouse.service.GuesthouseCommandService;
 import com.sumte.guesthouse.service.GuesthouseQueryService;
@@ -39,11 +41,11 @@ public class GuesthouseController {
 
 	@Operation(summary = "게스트하우스 등록", description = "게스트하우스를 등록합니다.")
 	@PostMapping
-	public ApiResponse<Void> registerGuesthouse(
+	public ResponseEntity<ApiResponse<GuesthouseResponseDTO.Register>> registerGuesthouse(
 		@RequestBody @Valid GuesthouseRequestDTO.Register dto) {
-		guesthouseCommandService.registerGuesthouse(dto);
+		GuesthouseResponseDTO.Register result = guesthouseCommandService.registerGuesthouse(dto);
 
-		return ApiResponse.successWithNoData();
+		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 	@DeleteMapping("/{guesthouseId}")
@@ -70,6 +72,18 @@ public class GuesthouseController {
 		guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
 		return ApiResponse.successWithNoData();
 
+	}
+
+	@GetMapping("/{guesthouseId}")
+	@Operation(summary = "게스트하우스 조회", description = "id기반으로 게스트하우스를 조회하는 api입니다")
+	@Parameters({
+		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요.")
+	})
+	public ResponseEntity<ApiResponse<GuesthouseResponseDTO.GetHouseResponse>> getRoom(
+		@PathVariable Long guesthouseId
+	) {
+		GuesthouseResponseDTO.GetHouseResponse result = guesthouseQueryService.getHouseById(guesthouseId);
+		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 	@PostMapping("/search")

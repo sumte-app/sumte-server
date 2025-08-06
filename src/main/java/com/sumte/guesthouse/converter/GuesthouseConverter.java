@@ -19,8 +19,8 @@ public class GuesthouseConverter {
 
 	public GuesthouseResponseDTO.Register toRegisterResponseDTO(Guesthouse guesthouse) {
 		return GuesthouseResponseDTO.Register.builder()
+			.id(guesthouse.getId())
 			.name(guesthouse.getName())
-			.addressRegion(guesthouse.getAddressRegion())
 			.build();
 
 	}
@@ -28,6 +28,7 @@ public class GuesthouseConverter {
 	public GuesthouseResponseDTO.Update toUpdateResponseDTO(Guesthouse guesthouse, List<String> optionServices,
 		List<String> targetAudience) {
 		return GuesthouseResponseDTO.Update.builder()
+			.id(guesthouse.getId())
 			.name(guesthouse.getName())
 			.addressRegion(guesthouse.getAddressRegion())
 			.addressDetail(guesthouse.getAddressDetail())
