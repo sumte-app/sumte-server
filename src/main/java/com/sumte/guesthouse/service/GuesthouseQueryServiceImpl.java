@@ -1,18 +1,30 @@
 package com.sumte.guesthouse.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
+import com.sumte.apiPayload.code.error.CommonErrorCode;
+import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.converter.GuesthouseConverter;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
+import com.sumte.guesthouse.dto.GuesthouseSearchRequestDTO;
 import com.sumte.guesthouse.entity.Guesthouse;
+import com.sumte.guesthouse.repository.GuesthouseOptionServicesRepository;
 import com.sumte.guesthouse.repository.GuesthouseRepository;
 import com.sumte.review.repository.ReviewRepository;
 import com.sumte.room.repository.RoomRepository;
+import com.sumte.guesthouse.repository.GuesthouseRepositoryCustom;
+import com.sumte.guesthouse.repository.GuesthouseTargetAudienceRepository;
+import com.sumte.room.dto.RoomResponseDTO;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,8 +35,16 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 	private final RoomRepository roomRepository;
 	private final ReviewRepository reviewRepository;
 	private final GuesthouseConverter guesthouseConverter;
+	private final GuesthouseTargetAudienceRepository guesthouseTargetAudienceRepository;
+	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
 
 	@Override
+	@Transactional
+	public GuesthouseResponseDTO.GetHouseResponse getHouseById(Long id) {
+
+		Guesthouse guesthouse = guesthouseRepository.findById(id).orElseThrow(
+			() -> new SumteException(CommonErrorCode.NOT_EXIST)
+		);
 	// 정렬된 게스트하우스 데이터를 조회해서 DTO로 변환 (리뷰, 체크인시간, 최소가격)
 	public Slice<GuesthouseResponseDTO.HomeSummary> getGuesthousesForHome(Pageable pageable) {
 		Slice<Guesthouse> guesthouses = guesthouseRepository.findAllOrderedForHome(pageable);
@@ -36,5 +56,43 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 			Optional.ofNullable(roomRepository.findEarliestCheckinByGuesthouseId(gh.getId())).orElse("00:00"),
 			Optional.ofNullable(roomRepository.findMinPriceByGuesthouseId(gh.getId())).orElse(0L)
 		));
+		List<String> targetAudiences = guesthouseTargetAudienceRepository.findTargetAudienceNamesByGuesthouseId(id);
+		List<String> optionServices = guesthouseOptionServicesRepository.findTargetAudienceNamesByGuesthouseId(id);
+
+		List<RoomResponseDTO.GetRoomResponse> roomDtos = guesthouse.getRooms().stream()
+			.map(room -> RoomResponseDTO.GetRoomResponse.builder()
+				.id(room.getId())
+				.name(room.getName())
+				.content(room.getContents())
+				.price(room.getPrice())
+				.checkin(room.getCheckin())
+				.checkout(room.getCheckout())
+				.standardCount(room.getStandardCount())
+				.totalCount(room.getTotalCount())
+				.imageUrl(room.getImageUrl())
+				.build())
+			.collect(Collectors.toList());
+
+		return GuesthouseResponseDTO.GetHouseResponse.builder()
+			.id(guesthouse.getId())
+			.name(guesthouse.getName())
+			.addressDetail(guesthouse.getAddressDetail())
+			.addressRegion(guesthouse.getAddressRegion())
+			.information(guesthouse.getInformation())
+			.imageUrl(guesthouse.getImageUrl())
+			.targetAudience(targetAudiences)
+			.optionServices(optionServices)
+			.rooms(roomDtos)
+			.build();
 	}
+
+	private final GuesthouseRepositoryCustom guesthouseRepositoryCustom;
+
+	@Override
+	@Transactional
+	public Page<GuesthousePreviewDTO> getFilteredGuesthouse(GuesthouseSearchRequestDTO dto, Pageable pageable) {
+
+		return guesthouseRepositoryCustom.searchFiltered(dto, pageable);
+	}
+
 }

@@ -12,7 +12,7 @@ public class RoomResponseDTO {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class Register {
+	public static class Registered {
 		Long roomId;
 		String name;
 	}
@@ -21,7 +21,7 @@ public class RoomResponseDTO {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class Update {
+	public static class Updated {
 		Long roomId;
 	}
 
@@ -29,8 +29,24 @@ public class RoomResponseDTO {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class Delete {
+	public static class Deleted {
 		String name;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class GetRoomResponse {
+		Long id;
+		String name;
+		Long price;
+		Long standardCount;
+		Long totalCount;
+		String content;
+		LocalTime checkin;
+		LocalTime checkout;
+		String imageUrl;
 	}
 
 	@NoArgsConstructor

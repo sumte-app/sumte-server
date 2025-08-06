@@ -10,7 +10,7 @@ import lombok.Getter;
 
 public class RoomRequestDTO {
 	@Getter
-	public static class Register {
+	public static class RegisterRoom {
 		@NotBlank(message = "이름을 입력해주세요")
 		String name;
 
@@ -28,7 +28,7 @@ public class RoomRequestDTO {
 		LocalTime checkout;
 
 		@NotNull(message = "기준 인원을 입력해주세요")
-		Long standartCount;
+		Long standardCount;
 
 		@NotNull(message = "최대 인원을 입력해주세요")
 		Long totalCount;
@@ -38,7 +38,7 @@ public class RoomRequestDTO {
 	}
 
 	@Getter
-	public static class Update {
+	public static class UpdateRoom {
 		String name;
 		String content;
 		Long price;
@@ -46,7 +46,7 @@ public class RoomRequestDTO {
 		LocalTime checkin;
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
 		LocalTime checkout;
-		Long standartCount;
+		Long standardCount;
 		Long totalCount;
 		String imageUrl;
 	}

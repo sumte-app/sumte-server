@@ -1,5 +1,6 @@
 package com.sumte.room.controller;
 
+import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class RoomController {
 	})
 	public ApiResponse<Void> registerRoom(
 		@PathVariable Long guesthouseId,
-		@RequestBody @Valid RoomRequestDTO.Register dto) {
+		@RequestBody @Valid RoomRequestDTO.RegisterRoom dto) {
 		roomCommandService.registerRoom(dto, guesthouseId);
 
 		return ApiResponse.successWithNoData();
@@ -72,10 +73,22 @@ public class RoomController {
 	})
 	public ApiResponse<Void> updateRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId,
-		@RequestBody @Valid RoomRequestDTO.Update dto
+		@RequestBody @Valid RoomRequestDTO.UpdateRoom dto
 	) {
 		roomCommandService.updateRoom(dto, guesthouseId, roomId);
 		return ApiResponse.successWithNoData();
+	}
+
+	@GetMapping("/room/{roomId}")
+	@Operation(summary = "방 조회", description = "id기반으로 room을 조회하는 api입니다")
+	@Parameters({
+		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
+	})
+	public ResponseEntity<ApiResponse<RoomResponseDTO.GetRoomResponse>> getRoom(
+		@PathVariable Long roomId
+	) {
+		RoomResponseDTO.GetRoomResponse result = roomQueryService.getRoomById(roomId);
+		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 	@GetMapping("/guesthouse/{guesthouseId}/rooms")

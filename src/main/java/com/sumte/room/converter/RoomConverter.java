@@ -12,27 +12,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RoomConverter {
 
-	public Room toRegisterEntity(RoomRequestDTO.Register dto) {
+	public Room toRegisterEntity(RoomRequestDTO.RegisterRoom dto) {
 		Room room = Room.createRoomEntity(dto);
 
 		return room;
 	}
 
-	public RoomResponseDTO.Register toRegisterDTO(Room room) {
-		return RoomResponseDTO.Register.builder()
+	public RoomResponseDTO.Registered toRegisterDTO(Room room) {
+		return RoomResponseDTO.Registered.builder()
 			.name(room.getName())
 			.roomId(room.getId())
 			.build();
 	}
 
-	public RoomResponseDTO.Delete toDeleteEntity(Room room) {
-		return RoomResponseDTO.Delete.builder()
+	public RoomResponseDTO.Deleted toDeleteEntity(Room room) {
+		return RoomResponseDTO.Deleted.builder()
 			.name(room.getName())
 			.build();
 	}
 
-	public RoomResponseDTO.Update toUpdateEntity(Room room) {
-		return RoomResponseDTO.Update.builder()
+	public RoomResponseDTO.Updated toUpdateEntity(Room room) {
+		return RoomResponseDTO.Updated.builder()
 			.roomId(room.getId())
 			.build();
 	}

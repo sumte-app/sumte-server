@@ -46,4 +46,12 @@ public class SignUpController {
 		signUpService.checkDuplicatedNickname(nickname);
 		return ResponseEntity.ok(ApiResponse.success("사용 가능한 닉네임입니다."));
 	}
+
+	@Operation(summary = "이메일 중복 확인 API", description = "이메일 중복 확인 API입니다.")
+	@GetMapping("/duplicate/email")
+	public ResponseEntity<ApiResponse<String>> checkDuplicateEmail(@RequestParam("email") String email) {
+		signUpService.checkDuplicatedEmail(email);
+		return ResponseEntity.ok(ApiResponse.success("사용 가능한 이메일입니다."));
+	}
+
 }

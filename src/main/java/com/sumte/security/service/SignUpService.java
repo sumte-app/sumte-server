@@ -39,4 +39,10 @@ public class SignUpService {
 			throw new SumteException(SecurityErrorCode.NICKNAME_DUPLICATED);
 		}
 	}
+
+	public void checkDuplicatedEmail(String email) {
+		if (userRepository.findByEmail(email).isPresent()) {
+			throw new SumteException(SecurityErrorCode.EMAIL_DUPLICATED);
+		}
+	}
 }
