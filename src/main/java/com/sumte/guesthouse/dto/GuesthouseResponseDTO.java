@@ -18,6 +18,7 @@ public class GuesthouseResponseDTO {
 	public static class Register {
 		Long id;
 		String name;
+		String addressRegion;
 	}
 
 	@Builder
@@ -60,6 +61,22 @@ public class GuesthouseResponseDTO {
 		List<String> targetAudience;
 		List<RoomResponseDTO.GetRoomResponse> rooms;
 
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class HomeSummary {
+		private Long guestHouseId;
+		private String name;
+		private String addressRegion;
+		private String imageUrl;
+		private Double averageScore;
+		private int reviewCount;
+		private String checkInTime;
+		private Long minPrice;
+		private boolean isAd;
 	}
 
 }

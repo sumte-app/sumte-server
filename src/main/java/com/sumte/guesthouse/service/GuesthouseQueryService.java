@@ -2,6 +2,7 @@ package com.sumte.guesthouse.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
@@ -12,4 +13,5 @@ public interface GuesthouseQueryService {
 
 	Page<GuesthousePreviewDTO> getFilteredGuesthouse(GuesthouseSearchRequestDTO dto, Pageable pageable);
 
+	Slice<GuesthouseResponseDTO.HomeSummary> getGuesthousesForHome(Pageable pageable);
 }

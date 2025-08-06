@@ -49,4 +49,20 @@ public class RoomResponseDTO {
 		String imageUrl;
 	}
 
+	@NoArgsConstructor
+	@Getter
+	@AllArgsConstructor
+	@Builder
+	public static class RoomSummary {
+		private Long id;
+		private String name;
+		private Long price;
+		private String imageUrl;
+		private Long standardCount;
+		private Long totalCount;
+		private LocalTime checkin;
+		private LocalTime checkout;
+		private boolean isReservable;
+	}
+
 }

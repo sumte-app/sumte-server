@@ -154,4 +154,20 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 
 	}
 
+	@Override
+	@Transactional
+	public void activateAdvertisement(Long guesthouseId) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+		guesthouse.activateAd();
+	}
+
+	@Override
+	@Transactional
+	public void deactivateAdvertisement(Long guesthouseId) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+		guesthouse.deactivateAd();
+	}
+
 }

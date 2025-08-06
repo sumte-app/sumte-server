@@ -1,8 +1,11 @@
 package com.sumte.guesthouse.controller;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +74,37 @@ public class GuesthouseController {
 		@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
 		guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
 		return ApiResponse.successWithNoData();
+	}
 
+	// @Operation(summary = "홈 화면 게스트하우스 목록 조회 (광고 우선)", description = "게스트하우스 목록을 보여줍니다")
+	// @GetMapping("/home")
+	// public ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>> getGuesthousesForHome(
+	// 	@ParameterObject
+	// 	@PageableDefault(size = 10) Pageable pageable) {
+	// 	return ApiResponse.success(guesthouseQueryService.getGuesthousesForHome(pageable));
+	// }
+
+	@GetMapping("/home")
+	public ResponseEntity<ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>>> getGuesthousesForHome(
+		@ParameterObject
+		@PageableDefault(size = 10) Pageable pageable) {
+		Slice<GuesthouseResponseDTO.HomeSummary> data = guesthouseQueryService.getGuesthousesForHome(pageable);
+		ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>> response = ApiResponse.success(data);
+		return ResponseEntity.ok(response);
+	}
+
+	@PatchMapping("/{guesthouseId}/advertisement/on")
+	@Operation(summary = "게스트하우스 광고 설정", description = "해당 게스트하우스를 광고 상태로 설정합니다.")
+	public ApiResponse<Void> activateAdvertisement(@PathVariable Long guesthouseId) {
+		guesthouseCommandService.activateAdvertisement(guesthouseId);
+		return ApiResponse.successWithNoData();
+	}
+
+	@PatchMapping("/{guesthouseId}/advertisement/off")
+	@Operation(summary = "게스트하우스 광고 해제", description = "해당 게스트하우스를 광고 상태에서 해제합니다.")
+	public ApiResponse<Void> deactivateAdvertisement(@PathVariable Long guesthouseId) {
+		guesthouseCommandService.deactivateAdvertisement(guesthouseId);
+		return ApiResponse.successWithNoData();
 	}
 
 	@GetMapping("/{guesthouseId}")
