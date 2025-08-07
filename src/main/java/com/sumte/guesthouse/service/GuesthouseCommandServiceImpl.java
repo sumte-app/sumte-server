@@ -92,9 +92,6 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 		if (dto.getAddressDetail() != null) {
 			guesthouse.setAddressDetail(dto.getAddressDetail());
 		}
-		if (dto.getImageUrl() != null) {
-			guesthouse.setImageUrl(dto.getImageUrl());
-		}
 		if (dto.getInformation() != null) {
 			guesthouse.setInformation(dto.getInformation());
 		}

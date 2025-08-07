@@ -33,8 +33,6 @@ public class Guesthouse extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private AdType advertisement;
 
-	private String imageUrl;
-
 	private String information;
 
 	@OneToMany(mappedBy = "guesthouse", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -45,7 +43,6 @@ public class Guesthouse extends BaseTimeEntity {
 		guesthouse.name = dto.getName();
 		guesthouse.addressRegion = dto.getAddressRegion();
 		guesthouse.addressDetail = dto.getAddressDetail();
-		guesthouse.imageUrl = dto.getImageUrl();
 		guesthouse.information = dto.getInformation();
 		guesthouse.advertisement = AdType.NON_AD;
 		return guesthouse;
@@ -61,10 +58,6 @@ public class Guesthouse extends BaseTimeEntity {
 
 	public void setAddressDetail(String addressDetail) {
 		this.addressDetail = addressDetail;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
 	}
 
 	public void setInformation(String information) {

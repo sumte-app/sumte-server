@@ -60,7 +60,6 @@ public class GuesthouseResponseDTO {
 		List<String> optionServices;
 		List<String> targetAudience;
 		List<RoomResponseDTO.GetRoomResponse> rooms;
-
 	}
 
 	@Builder
