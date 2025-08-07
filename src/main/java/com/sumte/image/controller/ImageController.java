@@ -41,7 +41,7 @@ public class ImageController {
 	@Operation(summary = "이미지 일괄 저장",
 		description = """
 			- 여러 이미지 메타데이터를 한 번에 저장합니다.
-			- 이미지가 등록되는 파트에 대한 정보 OwnerType(GUESTHOUSE, ROOM 등)과
+			- 이미지가 등록되는 파트에 대한 정보 OwnerType(GUESTHOUSE, ROOM, REVIEW)과
 			OwnerId(해당 파트의 ID)를 함께 전달해야 합니다.
 			- 요청 리스트 순서대로 서버에서 sortOrder(이미지 순서)가 1부터 자동 부여됩니다.
 			""")
