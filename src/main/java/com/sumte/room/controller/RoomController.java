@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Room API", description = "room을 추가/수정/삭제 하는 api입니다")
+@Tag(name = "객실 API", description = "특정 게스트하우스의 객실을 추가/수정/삭제 하는 api입니다")
 @RequestMapping("/guesthouse")
 public class RoomController {
 	private final RoomCommandService roomCommandService;
