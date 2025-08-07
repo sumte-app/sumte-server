@@ -1,6 +1,7 @@
 package com.sumte.room.dto;
 
 import java.time.LocalTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +47,7 @@ public class RoomResponseDTO {
 		String content;
 		LocalTime checkin;
 		LocalTime checkout;
-		String imageUrl;
+		List<String> imageUrls;
 	}
 
 	@NoArgsConstructor

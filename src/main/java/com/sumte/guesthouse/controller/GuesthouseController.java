@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.apiPayload.exception.annotation.CheckPage;
 import com.sumte.apiPayload.exception.annotation.CheckPageSize;
+import com.sumte.guesthouse.dto.GuesthouseDetailDTO;
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
@@ -113,10 +114,10 @@ public class GuesthouseController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요.")
 	})
-	public ResponseEntity<ApiResponse<GuesthouseResponseDTO.GetHouseResponse>> getRoom(
+	public ResponseEntity<ApiResponse<GuesthouseDetailDTO>> getRoom(
 		@PathVariable Long guesthouseId
 	) {
-		GuesthouseResponseDTO.GetHouseResponse result = guesthouseQueryService.getHouseById(guesthouseId);
+		GuesthouseDetailDTO result = guesthouseQueryService.getHouseById(guesthouseId);
 		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
