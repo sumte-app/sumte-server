@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "리뷰", description = "리뷰 관련 API")
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 
@@ -35,29 +35,29 @@ public class ReviewController {
 
 	@Operation(summary = "리뷰 등록")
 	@PostMapping
-	public ResponseEntity<Void> createReview(
+	public ResponseEntity<Long> createReview(
 		@UserId Long userId,
 		@RequestBody @Valid ReviewRequestDto dto) {
-		reviewService.createReview(userId, dto.getRoomId(), dto);
-		return ResponseEntity.noContent().build();
+		Long reviewId = reviewService.createReview(userId, dto);
+		return ResponseEntity.ok(reviewId);
 	}
 
 	@Operation(summary = "리뷰 수정")
-	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateReview(
+	@PatchMapping("/{reviewId}")
+	public ResponseEntity<Long> updateReview(
 		@UserId Long userId,
-		@PathVariable Long id,
+		@PathVariable Long reviewId,
 		@RequestBody @Valid ReviewRequestDto dto) {
-		reviewService.updateReview(userId, id, dto);
-		return ResponseEntity.noContent().build();
+		reviewService.updateReview(userId, reviewId, dto);
+		return ResponseEntity.ok(reviewId);
 	}
 
 	@Operation(summary = "리뷰 삭제")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<Void> deleteReview(
 		@UserId Long userId,
-		@PathVariable Long id) {
-		reviewService.deleteReview(userId, id);
+		@PathVariable Long reviewId) {
+		reviewService.deleteReview(userId, reviewId);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -74,7 +74,7 @@ public class ReviewController {
 	}
 
 	@Operation(summary = "내가 남긴 리뷰 전체 조회")
-	@GetMapping("/myreviews")
+	@GetMapping("/myReviews")
 	public ResponseEntity<Page<ReviewSearchDto>> getMyReviews(
 		@UserId Long userId,
 		@ParameterObject

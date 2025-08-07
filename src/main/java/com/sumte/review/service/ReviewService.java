@@ -11,7 +11,6 @@ import com.sumte.apiPayload.code.error.ReviewErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
 import com.sumte.review.converter.ReviewConverter;
 import com.sumte.review.dto.ReviewRequestDto;
-import com.sumte.review.dto.ReviewResponseDto;
 import com.sumte.review.dto.ReviewSearchDto;
 import com.sumte.review.entity.Review;
 import com.sumte.review.repository.ReviewRepository;
@@ -31,7 +30,7 @@ public class ReviewService {
 	private final RoomRepository roomRepository;
 
 	@Transactional
-	public ReviewResponseDto createReview(Long userId, Long roomId, ReviewRequestDto dto) {
+	public Long createReview(Long userId, ReviewRequestDto dto) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new SumteException(ReviewErrorCode.USER_NOT_FOUND));
 		Room room = roomRepository.findById(dto.getRoomId())
@@ -39,19 +38,18 @@ public class ReviewService {
 
 		Review review = ReviewConverter.toEntity(dto, user, room);
 		Review saved = reviewRepository.save(review);
-		return ReviewConverter.toDto(saved);
+		return saved.getId();
 	}
 
 	@Transactional
-	public ReviewResponseDto updateReview(Long userId, Long id, ReviewRequestDto dto) {
-		Optional<Review> opt = reviewRepository.findByIdAndUserId(id, userId);
+	public Void updateReview(Long userId, Long reviewId, ReviewRequestDto dto) {
+		Optional<Review> opt = reviewRepository.findByIdAndUserId(reviewId, userId);
 		if (opt.isPresent()) {
 			Review review = opt.get();
 			ReviewConverter.updateEntity(review, dto);
-			return ReviewConverter.toDto(review);
 		}
-		// id 자체가 존재하지 않으면 NOT_FOUND로
-		if (!reviewRepository.existsById(id)) {
+		// reviewId 자체가 존재하지 않으면 NOT_FOUND로
+		if (!reviewRepository.existsById(reviewId)) {
 			throw new SumteException(ReviewErrorCode.REVIEW_NOT_FOUND);
 		}
 		// id는 있지만 userId가 다르면 UNAUTH로
