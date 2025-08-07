@@ -91,8 +91,8 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 			));
 
 		// 4-c) RoomResponseDTO 리스트 생성
-		List<RoomResponseDTO.GetRoomResponse> roomDtos = rooms.stream()
-			.map(room -> RoomResponseDTO.GetRoomResponse.builder()
+		List<RoomResponseDTO.GetPreviewRoomByGuesthouseResponse> roomDtos = rooms.stream()
+			.map(room -> RoomResponseDTO.GetPreviewRoomByGuesthouseResponse.builder()
 				.id(room.getId())
 				.name(room.getName())
 				.content(room.getContents())
@@ -190,15 +190,15 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 	@Transactional
 	public Page<GuesthousePreviewDTO> getFilteredGuesthouse(GuesthouseSearchRequestDTO dto, Pageable pageable) {
 		// 1) 필터링된 게스트하우스 페이징 조회
-		Page<Guesthouse> page = guesthouseRepositoryCustom.searchFiltered(dto, pageable);
-		List<Guesthouse> ghList = page.getContent();
+		Page<GuesthousePreviewDTO> page = guesthouseRepositoryCustom.searchFiltered(dto, pageable);
+		List<GuesthousePreviewDTO> ghList = page.getContent();
 		if (ghList.isEmpty()) {
 			return new PageImpl<>(List.of(), pageable, 0);
 		}
 
 		// 2) 조회된 게스트하우스 ID들
 		List<Long> ghIds = ghList.stream()
-			.map(Guesthouse::getId)
+			.map(GuesthousePreviewDTO::getId)
 			.toList();
 
 		// 3) 이미지 일괄 조회 (N+1 방지)

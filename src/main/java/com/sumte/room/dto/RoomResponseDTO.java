@@ -50,6 +50,22 @@ public class RoomResponseDTO {
 		List<String> imageUrls;
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class GetPreviewRoomByGuesthouseResponse {
+		Long id;
+		String name;
+		Long price;
+		Long standardCount;
+		Long totalCount;
+		String content;
+		LocalTime checkin;
+		LocalTime checkout;
+		String imageUrl;
+	}
+
 	@NoArgsConstructor
 	@Getter
 	@AllArgsConstructor

@@ -23,6 +23,6 @@ public class GuesthouseDetailDTO {
 	private AdType advertisement;
 	private List<String> optionServices;
 	private List<String> targetAudience;
-	private List<RoomResponseDTO.GetRoomResponse> rooms;
+	private List<RoomResponseDTO.GetPreviewRoomByGuesthouseResponse> rooms;
 	private List<String> imageUrls;    // 모든 이미지 URL 리스트
 }
