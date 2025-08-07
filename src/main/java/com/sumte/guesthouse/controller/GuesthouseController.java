@@ -36,7 +36,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Tag(name = "게스트 하우스 관련 api", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
+@Tag(name = "게스트 하우스 api", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
 @RequiredArgsConstructor
 @RequestMapping("/guesthouse")
 public class GuesthouseController {

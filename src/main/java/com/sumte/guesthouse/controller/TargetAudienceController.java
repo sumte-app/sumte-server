@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Tag(name = "이용대상 조회 api", description = "게스트하우스의 이용대상을 조회하는 api 입니다.")
+@Tag(name = "게스트 하우스 api", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
 @RequiredArgsConstructor
 @RequestMapping("/target")
 public class TargetAudienceController {
