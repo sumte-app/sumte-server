@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/s3")
 @RequiredArgsConstructor
-@Tag(name = "S3 PresignedUrl API", description = "S3 PresignedUrl 발급 API")
+@Tag(name = "이미지 API", description = "이미지 메타데이터 저장·조회·교체 API 및 S3 PresignedUrl 발급 API")
 public class S3FileUploadController {
 
 	private final S3FileUploadService s3FileUploadService;
