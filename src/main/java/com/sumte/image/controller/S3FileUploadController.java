@@ -1,9 +1,6 @@
 package com.sumte.image.controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sumte.image.dto.S3UploadInfoDTO;
+import com.sumte.image.entity.OwnerType;
 import com.sumte.image.service.S3FileUploadService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -37,17 +38,34 @@ public class S3FileUploadController {
 
 	@Operation(
 		summary = "Presigned URLs 일괄 발급",
-		description = "여러 개의 파일명에 대해 Presigned URL을 일괄 생성하여 반환합니다."
+		description = """
+			- 여러 개의 파일명에 대해 Presigned URL을 일괄 생성하여 반환합니다. "
+			- 이미지가 등록되는 파트에 대한 정보 OwnerType(GUESTHOUSE, ROOM, REVIEW)과 OwnerId(해당 파트의 ID)를 함께 전달해야 합니다.
+			- presignedUrl로 파일 업로드를 진행할 수 있습니다.
+			- imageUrl로 이미지 저장 API의 url 키로 매핑시키면 됩니다. (iamgeUrl은 S3에 저장된 이미지의 URL입니다.)
+			"""
 	)
 	@GetMapping("/presigned-urls")
-	public ResponseEntity<Map<String, String>> generatePresignedUrls(
-		@RequestParam(name = "fileNames", defaultValue = "sumte1, ouchlogo") List<String> fileNames
+	public ResponseEntity<List<S3UploadInfoDTO>> generatePresignedUrls(
+		@RequestParam(name = "fileNames", defaultValue = "sumte1, ouchlogo") List<String> fileNames,
+		@Parameter(
+			name = "ownerType",
+			description = "이미지 소유자 타입",
+			example = "ROOM",
+			required = true,
+			in = ParameterIn.QUERY
+		) @RequestParam(name = "ownerType") OwnerType ownerType,
+		@Parameter(
+			name = "ownerId",
+			description = "소유자 ID",
+			example = "1",
+			required = true,
+			in = ParameterIn.QUERY
+		) @RequestParam(name = "ownerId") Long ownerId
 	) {
-		Map<String, String> presignedUrls = fileNames.stream()
-			.collect(Collectors.toMap(
-				Function.identity(),
-				key -> s3FileUploadService.generatePresignedUrl(key)
-			));
-		return ResponseEntity.ok(presignedUrls);
+		List<S3UploadInfoDTO> s3UploadInfoDTO = s3FileUploadService.generatePresignedUrl(
+			fileNames, ownerType, ownerId
+		);
+		return ResponseEntity.ok(s3UploadInfoDTO);
 	}
 }
