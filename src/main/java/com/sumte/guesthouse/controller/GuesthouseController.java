@@ -69,11 +69,12 @@ public class GuesthouseController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
 	})
-	public ApiResponse<Void> updateGuesthouse(
+	public ResponseEntity<Long> updateGuesthouse(
 		@PathVariable(name = "guesthouseId") Long guesthouseId,
 		@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
 		guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
-		return ApiResponse.successWithNoData();
+
+		return ResponseEntity.ok(guesthouseId);
 	}
 
 	// @Operation(summary = "홈 화면 게스트하우스 목록 조회 (광고 우선)", description = "게스트하우스 목록을 보여줍니다")
