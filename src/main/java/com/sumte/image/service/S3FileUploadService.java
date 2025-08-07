@@ -23,7 +23,7 @@ public class S3FileUploadService {
 	private String bucket;
 
 	@Transactional
-	public String generatePresignedUrl(String fileName, String contentType) {
+	public String generatePresignedUrl(String fileName/*, String contentType*/) {
 		// 만료 시간 설정
 		Date expiration = new Date();
 		long expTimeMillis = expiration.getTime() + (1000 * 60 * 5); // 5분
@@ -34,7 +34,7 @@ public class S3FileUploadService {
 			new GeneratePresignedUrlRequest(bucket, fileName)
 				.withMethod(HttpMethod.PUT)
 				.withExpiration(expiration);
-				//.withContentType(contentType);
+		//.withContentType(contentType);
 
 		// Presigned URL 생성
 		URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);

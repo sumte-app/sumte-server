@@ -82,17 +82,17 @@ public class ImageController {
 	@PostMapping
 	public ResponseEntity<List<ImageResponseDTO>> saveImagesBatch(
 
-		@Valid @RequestBody List<ImageRequestDTO> dtos) {
+		@Valid @RequestBody List<ImageRequestDTO> imageRequestDTOS) {
 
-		var savedList = imageService.saveAllImages(dtos);
-		var respList = savedList.stream()
+		var savedImageList = imageService.saveAllImages(imageRequestDTOS);
+		var imageResponseDTOS = savedImageList.stream()
 			.map(img -> new ImageResponseDTO(
 				img.getId(), img.getUrl(), img.getSortOrder(), img.getOwnerType(), img.getOwnerId()))
 			.collect(Collectors.toList());
 
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
-			.body(respList);
+			.body(imageResponseDTOS);
 	}
 
 	@Operation(
@@ -132,8 +132,8 @@ public class ImageController {
 			.map(r -> new ImageRequestDTO(ownerType, ownerId, r.getUrl()))
 			.collect(Collectors.toList());
 
-		var saved = imageService.replaceImages(ownerType, ownerId, requests);
-		var resp = saved.stream()
+		var replacedImages = imageService.replaceImages(ownerType, ownerId, requests);
+		var imageResponseDTOS = replacedImages.stream()
 			.map(img -> new ImageResponseDTO(
 				img.getId(),
 				img.getUrl(),
@@ -143,7 +143,7 @@ public class ImageController {
 			))
 			.collect(Collectors.toList());
 
-		return ResponseEntity.ok(resp);
+		return ResponseEntity.ok(imageResponseDTOS);
 	}
 
 	@Operation(summary = "이미지 목록 조회", description = "주어진 ownerType, ownerId 에 매핑된 이미지 리스트를 정렬순으로 조회합니다.")
@@ -164,11 +164,11 @@ public class ImageController {
 			in = ParameterIn.QUERY
 		)
 		@RequestParam Long ownerId) {
-		var list = imageService.getImagesByOwner(ownerType, ownerId);
-		var dtos = list.stream()
+		var imageList = imageService.getImagesByOwner(ownerType, ownerId);
+		var imageResponseDTOS = imageList.stream()
 			.map(img -> new ImageResponseDTO(
 				img.getId(), img.getUrl(), img.getSortOrder(), img.getOwnerType(), img.getOwnerId()))
 			.collect(Collectors.toList());
-		return ResponseEntity.ok(dtos);
+		return ResponseEntity.ok(imageResponseDTOS);
 	}
 }

@@ -1,5 +1,10 @@
 package com.sumte.image.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +25,29 @@ public class S3FileUploadController {
 
 	private final S3FileUploadService s3FileUploadService;
 
-	//@AllUser
+	/*
 	@Operation(summary = "PresignedUrl 발급", description = "이미지, 파일 업로드를 위한 PresignedUrl을 발급합니다.")
 	@GetMapping("/presigned-url")
 	public ResponseEntity<String> generatePresignedUrl(@RequestParam String fileName,
 		@RequestParam String contentType) {
 		String presignedUrl = s3FileUploadService.generatePresignedUrl(fileName, contentType);
 		return ResponseEntity.ok(presignedUrl);
+	}
+	 */
+
+	@Operation(
+		summary = "Presigned URLs 일괄 발급",
+		description = "여러 개의 파일명에 대해 Presigned URL을 일괄 생성하여 반환합니다."
+	)
+	@GetMapping("/presigned-urls")
+	public ResponseEntity<Map<String, String>> generatePresignedUrls(
+		@RequestParam(name = "fileNames", defaultValue = "sumte1, ouchlogo") List<String> fileNames
+	) {
+		Map<String, String> presignedUrls = fileNames.stream()
+			.collect(Collectors.toMap(
+				Function.identity(),
+				key -> s3FileUploadService.generatePresignedUrl(key)
+			));
+		return ResponseEntity.ok(presignedUrls);
 	}
 }
