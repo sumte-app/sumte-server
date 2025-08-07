@@ -35,7 +35,6 @@ public class Room extends BaseTimeEntity {
 	private LocalTime checkout;
 	private Long standardCount;
 	private Long totalCount;
-	private String imageUrl;
 
 	public static Room createRoomEntity(RoomRequestDTO.RegisterRoom dto) {
 		Room room = new Room();
@@ -46,7 +45,6 @@ public class Room extends BaseTimeEntity {
 		room.checkout = dto.getCheckout();
 		room.standardCount = dto.getStandardCount();
 		room.totalCount = dto.getTotalCount();
-		room.imageUrl = dto.getImageUrl();
 		return room;
 	}
 
@@ -81,9 +79,4 @@ public class Room extends BaseTimeEntity {
 	public void setTotalCount(Long totalCount) {
 		this.totalCount = totalCount;
 	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
 }
