@@ -18,8 +18,6 @@ public class ReviewRequestDto {
 	@NotNull
 	private Long roomId;
 
-	private String imageUrl;
-
 	@NotBlank
 	private String contents;
 

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ReviewSearchDto {
 	private Long id;
-	private String imageUrl;
 	private String contents;
 	private int score;
 	private String authorNickname;

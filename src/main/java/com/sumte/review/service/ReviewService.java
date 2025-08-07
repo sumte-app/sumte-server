@@ -72,7 +72,6 @@ public class ReviewService {
 	private ReviewSearchDto toListDto(Review r) {
 		return new ReviewSearchDto(
 			r.getId(),
-			r.getImageUrl(),
 			r.getContents(),
 			r.getScore(),
 			r.getUser().getNickname(),

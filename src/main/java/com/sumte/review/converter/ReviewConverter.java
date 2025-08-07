@@ -12,14 +12,12 @@ public class ReviewConverter {
 		return Review.builder()
 			.user(user)
 			.room(room)
-			.imageUrl(dto.getImageUrl())
 			.contents(dto.getContents())
 			.score(dto.getScore())
 			.build();
 	}
 
 	public static void updateEntity(Review review, ReviewRequestDto dto) {
-		review.changeImageUrl(dto.getImageUrl());
 		review.changeContents(dto.getContents());
 		review.changeScore(dto.getScore());
 	}
@@ -29,7 +27,6 @@ public class ReviewConverter {
 			review.getId(),
 			review.getUser().getId(),
 			review.getRoom().getId(),
-			review.getImageUrl(),
 			review.getContents(),
 			review.getScore()
 		);
