@@ -87,9 +87,6 @@ public class RoomCommandServiceImpl implements RoomCommandService {
 		if (dto.getTotalCount() != null) {
 			room.setTotalCount(dto.getTotalCount());
 		}
-		if (dto.getImageUrl() != null) {
-			room.setImageUrl(dto.getImageUrl());
-		}
 
 		return roomConverter.toUpdateEntity(room);
 

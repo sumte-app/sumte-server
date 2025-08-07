@@ -49,7 +49,6 @@ public class GuesthouseConverter {
 			.guestHouseId(guesthouse.getId())
 			.name(guesthouse.getName())
 			.addressRegion(guesthouse.getAddressRegion())
-			.imageUrl(guesthouse.getImageUrl())
 			.averageScore(avgScore)
 			.reviewCount(reviewCount)
 			.checkInTime(checkInTime)

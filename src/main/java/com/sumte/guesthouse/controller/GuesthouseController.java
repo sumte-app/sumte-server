@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.apiPayload.exception.annotation.CheckPage;
 import com.sumte.apiPayload.exception.annotation.CheckPageSize;
+import com.sumte.guesthouse.dto.GuesthouseDetailDTO;
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.dto.GuesthouseRequestDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
@@ -35,7 +36,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Tag(name = "게스트 하우스 관련 api", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
+@Tag(name = "게스트 하우스 api", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
 @RequiredArgsConstructor
 @RequestMapping("/guesthouse")
 public class GuesthouseController {
@@ -69,11 +70,12 @@ public class GuesthouseController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요")
 	})
-	public ApiResponse<Void> updateGuesthouse(
+	public ResponseEntity<Long> updateGuesthouse(
 		@PathVariable(name = "guesthouseId") Long guesthouseId,
 		@RequestBody @Valid GuesthouseRequestDTO.Update dto) {
 		guesthouseCommandService.updateGuesthouse(guesthouseId, dto);
-		return ApiResponse.successWithNoData();
+
+		return ResponseEntity.ok(guesthouseId);
 	}
 
 	// @Operation(summary = "홈 화면 게스트하우스 목록 조회 (광고 우선)", description = "게스트하우스 목록을 보여줍니다")
@@ -85,6 +87,7 @@ public class GuesthouseController {
 	// }
 
 	@GetMapping("/home")
+	@Operation(summary = "홈 화면 조회", description = "홈 화면에 출력할 홈 화면 전용 게스트하우스 조회 API입니다.")
 	public ResponseEntity<ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>>> getGuesthousesForHome(
 		@ParameterObject
 		@PageableDefault(size = 10) Pageable pageable) {
@@ -112,10 +115,10 @@ public class GuesthouseController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "게스트하우스 아이디를 넘겨주세요.")
 	})
-	public ResponseEntity<ApiResponse<GuesthouseResponseDTO.GetHouseResponse>> getRoom(
+	public ResponseEntity<ApiResponse<GuesthouseDetailDTO>> getRoom(
 		@PathVariable Long guesthouseId
 	) {
-		GuesthouseResponseDTO.GetHouseResponse result = guesthouseQueryService.getHouseById(guesthouseId);
+		GuesthouseDetailDTO result = guesthouseQueryService.getHouseById(guesthouseId);
 		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 

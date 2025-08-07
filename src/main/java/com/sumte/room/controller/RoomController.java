@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Room API", description = "room을 추가/수정/삭제 하는 api입니다")
+@Tag(name = "객실 API", description = "특정 게스트하우스의 객실을 추가/수정/삭제 하는 api입니다")
 @RequestMapping("/guesthouse")
 public class RoomController {
 	private final RoomCommandService roomCommandService;
@@ -41,13 +41,12 @@ public class RoomController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요")
 	})
-	public ApiResponse<Void> registerRoom(
+	public ApiResponse<Long> registerRoom(
 		@PathVariable Long guesthouseId,
 		@RequestBody @Valid RoomRequestDTO.RegisterRoom dto) {
-		roomCommandService.registerRoom(dto, guesthouseId);
-
-		return ApiResponse.successWithNoData();
-
+		RoomResponseDTO.Registered room = roomCommandService.registerRoom(dto, guesthouseId);
+		Long roomId = room.getRoomId();
+		return ApiResponse.created(roomId);
 	}
 
 	@DeleteMapping("/{guesthouseId}/room/{roomId}")
@@ -71,12 +70,12 @@ public class RoomController {
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요"),
 		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
 	})
-	public ApiResponse<Void> updateRoom(
+	public ApiResponse<Long> updateRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId,
 		@RequestBody @Valid RoomRequestDTO.UpdateRoom dto
 	) {
 		roomCommandService.updateRoom(dto, guesthouseId, roomId);
-		return ApiResponse.successWithNoData();
+		return ApiResponse.success(roomId);
 	}
 
 	@GetMapping("/room/{roomId}")

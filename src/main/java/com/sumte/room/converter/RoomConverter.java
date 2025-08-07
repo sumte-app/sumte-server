@@ -42,7 +42,6 @@ public class RoomConverter {
 			.id(room.getId())
 			.name(room.getName())
 			.price(room.getPrice())
-			.imageUrl(room.getImageUrl())
 			.standardCount(room.getStandardCount())
 			.totalCount(room.getTotalCount())
 			.checkin(room.getCheckin())

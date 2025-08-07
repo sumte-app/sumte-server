@@ -32,9 +32,6 @@ public class RoomRequestDTO {
 
 		@NotNull(message = "최대 인원을 입력해주세요")
 		Long totalCount;
-
-		String imageUrl;
-
 	}
 
 	@Getter
@@ -48,7 +45,5 @@ public class RoomRequestDTO {
 		LocalTime checkout;
 		Long standardCount;
 		Long totalCount;
-		String imageUrl;
 	}
-
 }

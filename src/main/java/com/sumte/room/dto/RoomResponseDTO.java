@@ -1,6 +1,7 @@
 package com.sumte.room.dto;
 
 import java.time.LocalTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,22 @@ public class RoomResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class GetRoomResponse {
+		Long id;
+		String name;
+		Long price;
+		Long standardCount;
+		Long totalCount;
+		String content;
+		LocalTime checkin;
+		LocalTime checkout;
+		List<String> imageUrls;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class GetPreviewRoomByGuesthouseResponse {
 		Long id;
 		String name;
 		Long price;
