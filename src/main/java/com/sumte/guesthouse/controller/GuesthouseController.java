@@ -87,6 +87,7 @@ public class GuesthouseController {
 	// }
 
 	@GetMapping("/home")
+	@Operation(summary = "홈 화면 조회", description = "홈 화면에 출력할 홈 화면 전용 게스트하우스 조회 API입니다.")
 	public ResponseEntity<ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>>> getGuesthousesForHome(
 		@ParameterObject
 		@PageableDefault(size = 10) Pageable pageable) {
