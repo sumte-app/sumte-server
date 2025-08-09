@@ -37,3 +37,10 @@ management:
     web:
       exposure:
         include: health
+
+app:
+  host: ${EC2_HOST}
+
+kakao:
+  pay:
+    secret-key: ${KAKAOPAY_SECRET_KEY}
