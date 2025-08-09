@@ -1,5 +1,6 @@
 package com.sumte.payment.dto;
 
+import com.sumte.payment.entity.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,6 @@ public class PaymentRequestDTO {
     public static class CreatePaymentDTO {
         private Long reservationId;
         private Long amount;
-        private String paymentMethod;
+        private PaymentMethod paymentMethod;
     }
 }
