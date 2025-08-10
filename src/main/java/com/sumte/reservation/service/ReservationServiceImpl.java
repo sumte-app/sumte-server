@@ -3,9 +3,9 @@ package com.sumte.reservation.service;
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.code.error.ReservationErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.payment.entity.Payment;
+import com.sumte.payment.entity.PaymentStatus;
 import com.sumte.reservation.entity.ReservationStatus;
-import com.sumte.security.contextholder.GetAuthenticationInfo;
-import com.sumte.security.userDetail.SumteUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +25,11 @@ import com.sumte.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -108,4 +113,32 @@ public class ReservationServiceImpl implements ReservationService {
 		throw new IllegalStateException("인증 사용자 정보를 확인할 수 없습니다.");
 	}
 
+	@Override
+	@Transactional
+	public void updateCompletedReservations() {
+		LocalDate today = LocalDate.now();
+		LocalTime now = LocalTime.now();
+
+		List<Reservation> reservations = reservationRepository.findByReservationStatusNot(ReservationStatus.COMPLETED);
+		for (Reservation reservation : reservations) {
+			LocalDate endDate = reservation.getEndDate();
+			LocalTime checkoutTime = reservation.getRoom().getCheckout();
+
+			boolean isAfterCheckout = endDate.isBefore(today) || (endDate.isEqual(today) && checkoutTime.isBefore(now));
+
+			if (!isAfterCheckout)
+				continue;
+
+			Optional<Payment> paymentOpt = paymentRepository.findByReservation(reservation);
+
+			boolean isPaid = paymentOpt
+					.map(Payment::getPaymentStatus)
+					.filter(status -> status == PaymentStatus.PAID)
+					.isPresent();
+
+			if (isPaid) {
+				reservation.complete();
+			}
+		}
+	}
 }
