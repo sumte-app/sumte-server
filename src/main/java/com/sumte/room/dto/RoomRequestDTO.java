@@ -28,13 +28,10 @@ public class RoomRequestDTO {
 		LocalTime checkout;
 
 		@NotNull(message = "기준 인원을 입력해주세요")
-		Long standartCount;
+		Long standardCount;
 
 		@NotNull(message = "최대 인원을 입력해주세요")
 		Long totalCount;
-
-		String imageUrl;
-
 	}
 
 	@Getter
@@ -46,9 +43,7 @@ public class RoomRequestDTO {
 		LocalTime checkin;
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
 		LocalTime checkout;
-		Long standartCount;
+		Long standardCount;
 		Long totalCount;
-		String imageUrl;
 	}
-
 }

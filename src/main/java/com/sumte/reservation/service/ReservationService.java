@@ -10,4 +10,5 @@ public interface ReservationService {
 	Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(Pageable pageable);
 	ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId);
 	void cancelReservation(Long reservationId);
+  void updateCompletedReservations();
 }

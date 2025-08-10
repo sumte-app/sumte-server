@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 
 	private final GuesthouseRepository guesthouseRepository;
@@ -46,27 +47,31 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 
 		guesthouseRepository.save(guesthouse);
 
-		dto.getOptionServices().forEach(optionService -> {
-			OptionServices optionServices = optionServicesRepository.findByName(optionService).orElseThrow(
-				() -> new SumteException(CommonErrorCode.OPTIONSERVICE_NOT_EXIST)
-			);
+		if (dto.getOptionServices() != null) {
+			dto.getOptionServices().forEach(optionService -> {
+				OptionServices optionServices = optionServicesRepository.findByName(optionService).orElseThrow(
+					() -> new SumteException(CommonErrorCode.OPTIONSERVICE_NOT_EXIST)
+				);
 
-			GuesthouseOptionServices guesthouseOptionServices = new GuesthouseOptionServices();
-			guesthouseOptionServices.setGuesthouse(guesthouse);
-			guesthouseOptionServices.setOptionServices(optionServices);
-			guesthouseOptionServicesRepository.save(guesthouseOptionServices);
-		});
+				GuesthouseOptionServices guesthouseOptionServices = new GuesthouseOptionServices();
+				guesthouseOptionServices.setGuesthouse(guesthouse);
+				guesthouseOptionServices.setOptionServices(optionServices);
+				guesthouseOptionServicesRepository.save(guesthouseOptionServices);
+			});
+		}
 
-		dto.getTargetAudience().forEach(targetAudience -> {
-			TargetAudience ta = targetAudienceRepository.findByName(targetAudience)
-				.orElseThrow(() -> new SumteException(CommonErrorCode.TARGETAUDIENCE_NOT_EXIST));
+		if (dto.getTargetAudience() != null) {
+			dto.getTargetAudience().forEach(targetAudience -> {
+				TargetAudience ta = targetAudienceRepository.findByName(targetAudience)
+					.orElseThrow(() -> new SumteException(CommonErrorCode.TARGETAUDIENCE_NOT_EXIST));
 
-			GuesthouseTargetAudience guesthouseTargetAudience = new GuesthouseTargetAudience();
-			guesthouseTargetAudience.setGuesthouse(guesthouse);
-			guesthouseTargetAudience.setTargetAudience(ta);
+				GuesthouseTargetAudience guesthouseTargetAudience = new GuesthouseTargetAudience();
+				guesthouseTargetAudience.setGuesthouse(guesthouse);
+				guesthouseTargetAudience.setTargetAudience(ta);
 
-			guesthouseTargetAudienceRepository.save(guesthouseTargetAudience);
-		});
+				guesthouseTargetAudienceRepository.save(guesthouseTargetAudience);
+			});
+		}
 
 		GuesthouseResponseDTO.Register result = guesthouseConverter.toRegisterResponseDTO(guesthouse);
 		return result;
@@ -86,9 +91,6 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 		}
 		if (dto.getAddressDetail() != null) {
 			guesthouse.setAddressDetail(dto.getAddressDetail());
-		}
-		if (dto.getImageUrl() != null) {
-			guesthouse.setImageUrl(dto.getImageUrl());
 		}
 		if (dto.getInformation() != null) {
 			guesthouse.setInformation(dto.getInformation());
@@ -138,6 +140,8 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 		if (guesthouse == null) {
 			throw new SumteException(CommonErrorCode.NOT_EXIST);
 		} else {
+			guesthouseOptionServicesRepository.deleteByGuesthouseId(guesthouseId);
+			guesthouseTargetAudienceRepository.deleteByGuesthouseId(guesthouseId);
 			guesthouseRepository.delete(guesthouse);
 			return GuesthouseResponseDTO.delete.builder()
 				.name(guesthouse.getName())
@@ -145,6 +149,22 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 				.build();
 		}
 
+	}
+
+	@Override
+	@Transactional
+	public void activateAdvertisement(Long guesthouseId) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+		guesthouse.activateAd();
+	}
+
+	@Override
+	@Transactional
+	public void deactivateAdvertisement(Long guesthouseId) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+		guesthouse.deactivateAd();
 	}
 
 }

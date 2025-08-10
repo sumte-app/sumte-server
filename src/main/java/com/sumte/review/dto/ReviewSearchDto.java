@@ -1,6 +1,7 @@
 package com.sumte.review.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ReviewSearchDto {
 	private Long id;
-	private String imageUrl;
+	private List<String> imageUrls;
 	private String contents;
 	private int score;
 	private String authorNickname;

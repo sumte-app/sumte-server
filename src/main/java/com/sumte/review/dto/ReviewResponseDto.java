@@ -13,7 +13,6 @@ public class ReviewResponseDto {
 	private Long id;
 	private Long userId;
 	private Long roomId;
-	private String imageUrl;
 	private String contents;
 	private int score;
 
