@@ -1,29 +1,28 @@
 package com.sumte.reservation.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.code.error.ReservationErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.payment.entity.Payment;
+import com.sumte.payment.entity.PaymentStatus;
+import com.sumte.reservation.entity.ReservationStatus;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sumte.image.entity.Image;
 import com.sumte.image.entity.OwnerType;
 import com.sumte.image.repository.ImageRepository;
-import com.sumte.payment.entity.Payment;
-import com.sumte.payment.entity.PaymentStatus;
 import com.sumte.payment.repository.PaymentRepository;
 import com.sumte.reservation.converter.ReservationConverter;
 import com.sumte.reservation.dto.ReservationRequestDTO;
 import com.sumte.reservation.dto.ReservationResponseDTO;
 import com.sumte.reservation.entity.Reservation;
-import com.sumte.reservation.entity.ReservationStatus;
 import com.sumte.reservation.repository.ReservationRepository;
 import com.sumte.review.repository.ReviewRepository;
 import com.sumte.room.entity.Room;
@@ -33,8 +32,14 @@ import com.sumte.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationServiceImpl implements ReservationService {
 
 	private final ReservationRepository reservationRepository;
@@ -47,10 +52,11 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional
-	public ReservationResponseDTO.CreateReservationDTO createReservation(
-		ReservationRequestDTO.CreateReservationDTO request, Long userId) {
+	public ReservationResponseDTO.CreateReservationDTO createReservation(ReservationRequestDTO.CreateReservationDTO request) {
+		Long userId = currentUserId();
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
+  
 		Room room = roomRepository.findById(request.getRoomId())
 			.orElseThrow(() -> new SumteException(ReservationErrorCode.ROOM_NOT_FOUND));
 
@@ -78,7 +84,8 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(Long userId, Pageable pageable) {
+	public Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(Pageable pageable) {
+		Long userId = currentUserId();
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
 
@@ -107,43 +114,43 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId, Long userId) {
+	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 
-		if (!reservation.getUser().getId().equals(userId)) {
-			throw new SumteException(CommonErrorCode.FORBIDDEN);
-		}
-
-		// 첫 번째 방 이미지 URL 조회
 		String firstImageUrl = imageRepository
-			.findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(
-				OwnerType.ROOM,
-				reservation.getRoom().getId()
-			)
-			.stream()
-			.map(Image::getUrl)
-			.findFirst()
-			.orElse(null);
-
+				.findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(
+						OwnerType.ROOM,
+						reservation.getRoom().getId()
+				)
+				.stream()
+				.map(Image::getUrl)
+				.findFirst()
+				.orElse(null);
+    
 		return reservationConverter.toReservationDetailDTO(reservation, firstImageUrl);
 	}
 
 	@Override
 	@Transactional
-	public void cancelReservation(Long reservationId, Long userId) {
+	public void cancelReservation(Long reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
-			.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-
-		// 사용자 본인 확인
-		if (!reservation.getUser().getId().equals(userId)) {
-			throw new SumteException(CommonErrorCode.FORBIDDEN);
-		}
+				.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 		// 이미 취소된 예약인지 확인
 		if (reservation.getReservationStatus() == ReservationStatus.CANCELED) {
 			throw new SumteException(ReservationErrorCode.ALREADY_CANCELED);
 		}
 		reservation.cancel();
+	}
+
+	private Long currentUserId() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		Object details = auth.getDetails();
+		if (details instanceof Long id) {
+			return id;
+		}
+		throw new IllegalStateException("인증 사용자 정보를 확인할 수 없습니다.");
 	}
 
 	@Override
@@ -174,5 +181,4 @@ public class ReservationServiceImpl implements ReservationService {
 			}
 		}
 	}
-
 }

@@ -41,43 +41,38 @@ public class ReservationController {
 	@PostMapping
 	@Operation(summary = "예약 생성 API", description = "요청 본문으로 객실 ID, 투숙 인원, 날짜 정보를 입력받고, 헤더의 userId를 통해 예약을 생성합니다.")
 	public ResponseEntity<ApiResponse<Void>> createReservation(
-		@Parameter(description = "요청한 사용자 ID") @UserId Long userId,
-		@Valid @RequestBody ReservationRequestDTO.CreateReservationDTO request
+			@Valid @RequestBody ReservationRequestDTO.CreateReservationDTO request
 	) {
-		reservationService.createReservation(request, userId);
+		reservationService.createReservation(request);
 		return ResponseEntity.ok(ApiResponse.success(null));
 	}
 
 	@GetMapping("/my")
 	@Operation(summary = "내 예약 목록 조회 API", description = "내가 예약한 숙소 목록을 페이지 단위로 조회합니다.")
 	public ResponseEntity<ApiResponse<Page<ReservationResponseDTO.MyReservationDTO>>> getMyReservations(
-		@Parameter(description = "요청한 사용자 ID") @UserId Long userId,
-		@CheckPage @RequestParam(name = "page", defaultValue = "1") int page,
-		@CheckPageSize @RequestParam(name = "size", defaultValue = "10") int size
+			@CheckPage @RequestParam(name = "page", defaultValue = "1") int page,
+			@CheckPageSize @RequestParam(name = "size", defaultValue = "10") int size
 	) {
 		Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "startDate"));
-		Page<ReservationResponseDTO.MyReservationDTO> result = reservationService.getMyReservations(userId, pageable);
+		Page<ReservationResponseDTO.MyReservationDTO> result = reservationService.getMyReservations(pageable);
 		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 	@GetMapping("/{id}")
 	@Operation(summary = "예약 상세 조회 API", description = "예약 ID를 기준으로 상세 정보를 조회합니다.")
 	public ResponseEntity<ApiResponse<ReservationResponseDTO.ReservationDetailDTO>> getReservationDetail(
-		@Parameter(description = "요청한 사용자 ID") @UserId Long userId,
-		@PathVariable("id") Long reservationId
+			@PathVariable("id") Long reservationId
 	) {
-		ReservationResponseDTO.ReservationDetailDTO result = reservationService.getReservationDetail(reservationId,
-			userId);
+		ReservationResponseDTO.ReservationDetailDTO result = reservationService.getReservationDetail(reservationId);
 		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
 	@PatchMapping("/{id}")
 	@Operation(summary = "예약 취소 API", description = "예약 ID를 기준으로 사용자의 예약을 취소합니다.")
 	public ResponseEntity<ApiResponse<Void>> cancelReservation(
-		@Parameter(description = "요청한 사용자 ID") @UserId Long userId,
-		@PathVariable("id") Long reservationId
+			@PathVariable("id") Long reservationId
 	) {
-		reservationService.cancelReservation(reservationId, userId);
+		reservationService.cancelReservation(reservationId);
 		return ResponseEntity.ok(ApiResponse.success(null));
 	}
 }
