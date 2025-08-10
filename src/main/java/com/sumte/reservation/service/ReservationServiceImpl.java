@@ -15,20 +15,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sumte.apiPayload.code.error.CommonErrorCode;
-import com.sumte.apiPayload.code.error.ReservationErrorCode;
-import com.sumte.apiPayload.exception.SumteException;
 import com.sumte.image.entity.Image;
 import com.sumte.image.entity.OwnerType;
 import com.sumte.image.repository.ImageRepository;
-import com.sumte.payment.entity.Payment;
-import com.sumte.payment.entity.PaymentStatus;
 import com.sumte.payment.repository.PaymentRepository;
 import com.sumte.reservation.converter.ReservationConverter;
 import com.sumte.reservation.dto.ReservationRequestDTO;
 import com.sumte.reservation.dto.ReservationResponseDTO;
 import com.sumte.reservation.entity.Reservation;
-import com.sumte.reservation.entity.ReservationStatus;
 import com.sumte.reservation.repository.ReservationRepository;
 import com.sumte.review.repository.ReviewRepository;
 import com.sumte.room.entity.Room;
@@ -123,8 +117,18 @@ public class ReservationServiceImpl implements ReservationService {
 	public ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		String firstImageUrl = imageRepository
+				.findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(
+						OwnerType.ROOM,
+						reservation.getRoom().getId()
+				)
+				.stream()
+				.map(Image::getUrl)
+				.findFirst()
+				.orElse(null);
     
-		return reservationConverter.toReservationDetailDTO(reservation);
+		return reservationConverter.toReservationDetailDTO(reservation, firstImageUrl);
 	}
 
 	@Override
@@ -147,6 +151,7 @@ public class ReservationServiceImpl implements ReservationService {
 			return id;
 		}
 		throw new IllegalStateException("인증 사용자 정보를 확인할 수 없습니다.");
+	}
 
 	@Override
 	@Transactional
@@ -170,35 +175,6 @@ public class ReservationServiceImpl implements ReservationService {
 				.map(Payment::getPaymentStatus)
 				.filter(status -> status == PaymentStatus.PAID)
 				.isPresent();
-
-			if (isPaid) {
-				reservation.complete();
-			}
-		}
-	}
-
-	@Override
-	@Transactional
-	public void updateCompletedReservations() {
-		LocalDate today = LocalDate.now();
-		LocalTime now = LocalTime.now();
-
-		List<Reservation> reservations = reservationRepository.findByReservationStatusNot(ReservationStatus.COMPLETED);
-		for (Reservation reservation : reservations) {
-			LocalDate endDate = reservation.getEndDate();
-			LocalTime checkoutTime = reservation.getRoom().getCheckout();
-
-			boolean isAfterCheckout = endDate.isBefore(today) || (endDate.isEqual(today) && checkoutTime.isBefore(now));
-
-			if (!isAfterCheckout)
-				continue;
-
-			Optional<Payment> paymentOpt = paymentRepository.findByReservation(reservation);
-
-			boolean isPaid = paymentOpt
-					.map(Payment::getPaymentStatus)
-					.filter(status -> status == PaymentStatus.PAID)
-					.isPresent();
 
 			if (isPaid) {
 				reservation.complete();
