@@ -110,6 +110,7 @@ jobs:
             # .env 파일 생성
             cat <<EOF > /home/ubuntu/.env
             SPRING_PROFILES_ACTIVE=prod
+            EC2_HOST=${{ secrets.EC2_HOST }}
             DOCKER_HUB_USERNAME=${{ secrets.DOCKER_USERNAME }}
             DOCKER_HUB_REPOSITORY=${{ secrets.DOCKER_HUB_REPOSITORY }}
             RDS_HOST=${{ secrets.RDS_HOST }}
@@ -158,3 +159,4 @@ jobs:
                -X POST \
                -d "{\"content\": \"$MESSAGE\"}" \
                ${{ secrets.DISCORD_WEBHOOK_URL }} || true
+
