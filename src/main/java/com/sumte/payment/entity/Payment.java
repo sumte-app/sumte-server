@@ -52,4 +52,8 @@
 		public void markAsRefunded() {
 			this.paymentStatus = PaymentStatus.REFUNDED;
 		}
+
+		public void setTid(String tid) {
+			this.tid = tid;
+		}
 	}

@@ -10,10 +10,14 @@ import com.sumte.reservation.entity.Reservation;
 public class PaymentConverter {
 
     public static Payment toEntity(PaymentRequestDTO.CreatePaymentDTO dto, Reservation reservation) {
+        PaymentMethod method = dto.getPaymentMethod() != null
+                ? dto.getPaymentMethod()
+                : PaymentMethod.KAKAOPAY;
+
         return Payment.builder()
                 .reservation(reservation)
                 .paidPrice(dto.getAmount())
-                .paymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()))
+                .paymentMethod(method)
                 .paymentStatus(PaymentStatus.PENDING)
                 .build();
     }

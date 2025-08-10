@@ -6,8 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ReservationService {
-	ReservationResponseDTO.CreateReservationDTO createReservation(ReservationRequestDTO.CreateReservationDTO request,Long UserId);
-	Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(Long userId, Pageable pageable);
-	ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId, Long userId);
-	void cancelReservation(Long reservationId, Long userId);
+	ReservationResponseDTO.CreateReservationDTO createReservation(ReservationRequestDTO.CreateReservationDTO request);
+	Page<ReservationResponseDTO.MyReservationDTO> getMyReservations(Pageable pageable);
+	ReservationResponseDTO.ReservationDetailDTO getReservationDetail(Long reservationId);
+	void cancelReservation(Long reservationId);
+    void updateCompletedReservations();
 }

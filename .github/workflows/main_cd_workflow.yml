@@ -110,6 +110,7 @@ jobs:
             # .env 파일 생성
             cat <<EOF > /home/ubuntu/.env
             SPRING_PROFILES_ACTIVE=prod
+            EC2_HOST=${{ secrets.EC2_HOST }}
             DOCKER_HUB_USERNAME=${{ secrets.DOCKER_USERNAME }}
             DOCKER_HUB_REPOSITORY=${{ secrets.DOCKER_HUB_REPOSITORY }}
             RDS_HOST=${{ secrets.RDS_HOST }}
@@ -120,6 +121,7 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
             S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            KAKAOPAY_SECRET_KEY=${{ secrets.KAKAOPAY_SECRET_KEY }}
             EOF
             
             # .env 파일 권한 설정
@@ -132,29 +134,31 @@ jobs:
             docker compose -f /home/ubuntu/docker-compose.yml pull
             docker compose -f /home/ubuntu/docker-compose.yml up -d --force-recreate --remove-orphans
 
-#      - name: Send Discord Notification
-#        if: always()
-#        run: |
-#          STATUS="${{ job.status }}"
-#          if [ "$STATUS" == "success" ]; then
-#            EMOJI="✅"
-#          else
-#            EMOJI="❌"
-#          fi
-#
-#          # 반복 폴링 헬스체크
-#          HEALTH_STATUS="❌ 서버 비정상 작동"
-#          for i in {1..30}; do
-#            if curl -sSf https://sumteapi.duckdns.org/actuator/health >/dev/null; then
-#              HEALTH_STATUS="✅ 서버 정상 작동"
-#              break
-#            fi
-#            sleep 5
-#          done
-#
-#          MESSAGE="$EMOJI **sumte 배포 결과**\\n상태: $STATUS\\n$HEALTH_STATUS\\n🔗 프로젝트: ${{ github.repository }}\\n👤 커밋: ${{ github.actor }}"
-#
-#          curl -H "Content-Type: application/json" \
-#               -X POST \
-#               -d "{\"content\": \"$MESSAGE\"}" \
-#               ${{ secrets.DISCORD_WEBHOOK_URL }} || true
+      - name: Send Discord Notification
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" == "success" ]; then
+            EMOJI="✅"
+          else
+            EMOJI="❌"
+          fi
+
+          # 반복 폴링 헬스체크
+          HEALTH_STATUS="❌ 서버 비정상 작동"
+          for i in {1..30}; do
+            if curl -sSf https://sumteapi.duckdns.org/actuator/health >/dev/null; then
+              HEALTH_STATUS="✅ 서버 정상 작동"
+              break
+            fi
+            sleep 5
+          done
+
+          MESSAGE="$EMOJI **sumte 배포 결과**\\n상태: $STATUS\\n$HEALTH_STATUS\\n🔗 프로젝트: ${{ github.repository }}\\n👤 커밋: ${{ github.actor }}"
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\": \"$MESSAGE\"}" \
+               ${{ secrets.DISCORD_WEBHOOK_URL }} || true
+
+

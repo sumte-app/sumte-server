@@ -81,14 +81,11 @@ public class RoomCommandServiceImpl implements RoomCommandService {
 		if (dto.getCheckout() != null) {
 			room.setCheckout(dto.getCheckout());
 		}
-		if (dto.getStandartCount() != null) {
-			room.setStandardCount(dto.getStandartCount());
+		if (dto.getStandardCount() != null) {
+			room.setStandardCount(dto.getStandardCount());
 		}
 		if (dto.getTotalCount() != null) {
 			room.setTotalCount(dto.getTotalCount());
-		}
-		if (dto.getImageUrl() != null) {
-			room.setImageUrl(dto.getImageUrl());
 		}
 
 		return roomConverter.toUpdateEntity(room);
