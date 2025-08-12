@@ -24,9 +24,7 @@
         private final PaymentTransactionHelper transactionHelper;
         private final KakaoPayClient kakaoPayClient;
 
-        @Value("${app.host}")
-        private String appHost;
-
+        String baseUrl = "https://sumteapi.duckdns.org";
         @Override
         @Transactional
         public PaymentResponseDTO.PaymentReadyResponse requestPayment(PaymentRequestDTO.PaymentRequestCreate dto) {
@@ -53,9 +51,9 @@
                     .quantity("1")
                     .total_amount(String.valueOf(totalAmount))
                     .tax_free_amount("0")
-                    .approval_url(appHost + "/pay/success")
-                    .cancel_url(appHost + "/pay/cancel")
-                    .fail_url(appHost + "/pay/fail")
+                    .approval_url(baseUrl + "/pay/success")
+                    .cancel_url(baseUrl  + "/pay/cancel")
+                    .fail_url(baseUrl  + "/pay/fail")
                     .build();
 
             KakaoPayReadyResponseDTO kakaoResponse = kakaoPayClient.requestPayment(request);
