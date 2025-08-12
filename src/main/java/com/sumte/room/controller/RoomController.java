@@ -24,6 +24,9 @@ import com.sumte.room.service.RoomQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +44,68 @@ public class RoomController {
 	@Parameters({
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요")
 	})
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(
+		description = "등록할 방 정보를 입력해주세요.",
+		required = true,
+		content = @Content(
+			schema = @Schema(implementation = RoomRequestDTO.RegisterRoom.class),
+			examples = @ExampleObject(
+				name = "Register Room Example",
+				value = """
+					{
+					  "name": "오션뷰 더블룸",
+					  "content": "바다 전망, 킹사이즈 침대, 무료 Wi-Fi",
+					  "price": 120000,
+					  "checkin": "15:00:00",
+					  "checkout": "11:00:00",
+					  "standardCount": 2,
+					  "totalCount": 4
+					}
+					"""
+			)
+		)
+	)
 	public ApiResponse<Long> registerRoom(
 		@PathVariable Long guesthouseId,
 		@RequestBody @Valid RoomRequestDTO.RegisterRoom dto) {
 		RoomResponseDTO.Registered room = roomCommandService.registerRoom(dto, guesthouseId);
 		Long roomId = room.getRoomId();
 		return ApiResponse.created(roomId);
+	}
+
+	@PatchMapping("/{guesthouseId}/room/{roomId}")
+	@Operation(summary = "방 수정 api", description = "방을 수정하는 api 입니다.")
+	@Parameters({
+		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요"),
+		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
+	})
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(
+		description = "수정할 방 정보를 입력해주세요.",
+		required = true,
+		content = @Content(
+			schema = @Schema(implementation = RoomRequestDTO.UpdateRoom.class),
+			examples = @ExampleObject(
+				name = "Update Room Example",
+				value = """
+					{
+					  "name": "마운틴뷰 트윈룸",
+					  "content": "산 전망, 트윈 침대 2개, 무료 Wi-Fi",
+					  "price": 90000,
+					  "checkin": "14:00:00",
+					  "checkout": "10:00:00",
+					  "standardCount": 2,
+					  "totalCount": 3
+					}
+					"""
+			)
+		)
+	)
+	public ApiResponse<Long> updateRoom(
+		@PathVariable Long guesthouseId, @PathVariable Long roomId,
+		@RequestBody @Valid RoomRequestDTO.UpdateRoom dto
+	) {
+		roomCommandService.updateRoom(dto, guesthouseId, roomId);
+		return ApiResponse.success(roomId);
 	}
 
 	@DeleteMapping("/{guesthouseId}/room/{roomId}")
@@ -62,20 +121,6 @@ public class RoomController {
 
 		return ApiResponse.successWithNoData();
 
-	}
-
-	@PatchMapping("/{guesthouseId}/room/{roomId}")
-	@Operation(summary = "방 수정 api", description = "방을 수정하는 api 입니다.")
-	@Parameters({
-		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요"),
-		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
-	})
-	public ApiResponse<Long> updateRoom(
-		@PathVariable Long guesthouseId, @PathVariable Long roomId,
-		@RequestBody @Valid RoomRequestDTO.UpdateRoom dto
-	) {
-		roomCommandService.updateRoom(dto, guesthouseId, roomId);
-		return ApiResponse.success(roomId);
 	}
 
 	@GetMapping("/room/{roomId}")
