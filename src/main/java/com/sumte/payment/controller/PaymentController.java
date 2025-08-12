@@ -6,6 +6,8 @@ import com.sumte.payment.dto.PaymentRequestDTO;
 import com.sumte.payment.dto.PaymentResponseDTO;
 import com.sumte.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,14 @@ public class PaymentController {
 
     @PostMapping("/request")
     @Operation(summary = "결제 요청 API",  description = "요청 본문으로 예약 ID, 결제 금액, 결제 수단을 입력받고, 결제창 URL과 결제 ID를 응답합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = PaymentResponseDTO.CreatePaymentDTO.class)
+            )
+    )
     public ResponseEntity<ApiResponse<PaymentResponseDTO.CreatePaymentDTO>> requestPayment(
             @Valid @RequestBody PaymentRequestDTO.CreatePaymentDTO dto) {
 
