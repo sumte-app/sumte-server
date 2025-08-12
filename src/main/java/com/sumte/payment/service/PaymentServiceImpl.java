@@ -61,7 +61,7 @@
             KakaoPayReadyResponseDTO kakaoResponse = kakaoPayClient.requestPayment(request);
             payment.setTid(kakaoResponse.getTid());
 
-            return PaymentConverter.toCreateResponse(payment, kakaoResponse.getNext_redirect_pc_url());
+            return PaymentConverter.toCreateResponse(payment, kakaoResponse.getNext_redirect_app_url());
         }
 
         @Override
