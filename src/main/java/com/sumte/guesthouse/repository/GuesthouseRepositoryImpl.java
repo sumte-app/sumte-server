@@ -12,7 +12,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
@@ -174,57 +174,42 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			));
 		}
 
-		// List<GuesthousePreviewDTO> guesthouses = queryFactory
-		// 	.select(Projections.constructor(
-		// 		GuesthousePreviewDTO.class,
-		// 		guesthouse.id,
-		// 		guesthouse.name,
-		// 		// review.score.avg().coalesce(0.0),
-		// 		// review.id.count().coalesce(0L),
-		// 		JPAExpressions.select(
-		// 			Expressions.numberTemplate(Double.class, "coalesce(avg({0}), {1})", review.score, 0.0)
-		// 		).from(review).where(review.room.guesthouse.id.eq(guesthouse.id)),
-		//
-		// 		JPAExpressions.select(
-		// 			Expressions.numberTemplate(Long.class, "coalesce(count({0}), {1})", review.id, 0L)
-		// 		).from(review).where(review.room.guesthouse.id.eq(guesthouse.id)),
-		// 		Expressions.numberTemplate(Long.class, "min({0})", room.price),
-		// 		guesthouse.addressRegion,
-		// 		room.checkin.min()
-		// 	))
-		// 	.from(room)
-		// 	.join(room.guesthouse, guesthouse)
-		// 	.leftJoin(review).on(review.room.id.eq(room.id))
-		// 	.where(condition)
-		// 	.groupBy(guesthouse.id)
-		// 	.orderBy(review.id.count().desc())
-		// 	.offset(pageable.getOffset())
-		// 	.limit(pageable.getPageSize())
-		// 	.fetch();
-		NumberTemplate<Double> avgScore = Expressions.numberTemplate(Double.class,
-			"coalesce((select avg(r.score) from Review r where r.room.guesthouse.id = {0}), {1})",
-			guesthouse.id, 0.0);
+		NumberExpression<Double> avgScoreExpr = Expressions.numberTemplate(
+			Double.class,
+			"coalesce(({0}), {1})",
+			JPAExpressions
+				.select(review.score.avg())
+				.from(review)
+				.where(review.room.guesthouse.id.eq(guesthouse.id)),
+			0.0
+		);
 
-		NumberTemplate<Long> reviewCount = Expressions.numberTemplate(Long.class,
-			"coalesce((select count(r.id) from Review r where r.room.guesthouse.id = {0}), {1})",
-			guesthouse.id, 0L);
+		NumberExpression<Integer> reviewCountExpr = Expressions.numberTemplate(
+			Integer.class,
+			"coalesce(({0}), {1})",
+			JPAExpressions
+				.select(review.id.count())
+				.from(review)
+				.where(review.room.guesthouse.id.eq(guesthouse.id)),
+			0
+		);
 
 		List<GuesthousePreviewDTO> guesthouses = queryFactory
-			.select(Projections.constructor(
+			.select(Projections.fields(
 				GuesthousePreviewDTO.class,
 				guesthouse.id,
 				guesthouse.name,
-				avgScore,
-				reviewCount,
-				Expressions.numberTemplate(Long.class, "min({0})", room.price),
+				avgScoreExpr.as("averageScore"),
+				reviewCountExpr.as("reviewCount"),
+				Expressions.numberTemplate(Long.class, "min({0})", room.price).as("lowerPrice"),
 				guesthouse.addressRegion,
-				room.checkin.min()
+				room.checkin.min().as("checkinTime")
 			))
 			.from(room)
 			.join(room.guesthouse, guesthouse)
 			.where(condition)
 			.groupBy(guesthouse.id, guesthouse.name, guesthouse.addressRegion)
-			.orderBy(reviewCount.desc()) // ← SubQuery로 만든 count를 기준으로 정렬
+			.orderBy(reviewCountExpr.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
