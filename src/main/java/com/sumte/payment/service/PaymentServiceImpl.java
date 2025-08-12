@@ -29,7 +29,7 @@
 
         @Override
         @Transactional
-        public PaymentResponseDTO.CreatePaymentDTO requestPayment(PaymentRequestDTO.CreatePaymentDTO dto) {
+        public PaymentResponseDTO.PaymentReadyResponse requestPayment(PaymentRequestDTO.PaymentRequestCreate dto) {
             Reservation reservation = reservationRepository.findById(dto.getReservationId())
                     .orElseThrow(() -> new SumteException(PaymentErrorCode.RESERVATION_NOT_FOUND));
 

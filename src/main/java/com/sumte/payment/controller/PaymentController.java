@@ -24,18 +24,10 @@ public class PaymentController {
 
     @PostMapping("/request")
     @Operation(summary = "결제 요청 API",  description = "요청 본문으로 예약 ID, 결제 금액, 결제 수단을 입력받고, 결제창 URL과 결제 ID를 응답합니다.")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = PaymentResponseDTO.CreatePaymentDTO.class)
-            )
-    )
-    public ResponseEntity<ApiResponse<PaymentResponseDTO.CreatePaymentDTO>> requestPayment(
-            @Valid @RequestBody PaymentRequestDTO.CreatePaymentDTO dto) {
+    public ResponseEntity<ApiResponse<PaymentResponseDTO.PaymentReadyResponse>> requestPayment(
+            @Valid @RequestBody PaymentRequestDTO.PaymentRequestCreate dto) {
 
-        PaymentResponseDTO.CreatePaymentDTO response = paymentService.requestPayment(dto);
+        PaymentResponseDTO.PaymentReadyResponse response = paymentService.requestPayment(dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
