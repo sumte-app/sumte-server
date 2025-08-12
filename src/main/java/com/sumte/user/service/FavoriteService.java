@@ -1,5 +1,9 @@
 package com.sumte.user.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -55,4 +59,19 @@ public class FavoriteService {
 				fav.getGuesthouse().getName()
 			));
 	}
+
+	@Transactional(readOnly = true)
+	public List<Long> getFavoritedGuesthouseIds(Long userId, List<Long> guesthouseIds) {
+		if (guesthouseIds == null || guesthouseIds.isEmpty()) {
+			return List.of();
+		}
+
+		if (!userRepository.existsById(userId)) {
+			throw new SumteException(FavoriteErrorCode.USER_NOT_FOUND);
+		}
+		// 중복입력
+		Set<Long> uniqueIds = new HashSet<>(guesthouseIds);
+		return favoriteRepository.findFavoritedGuesthouseIds(userId, uniqueIds);
+	}
+
 }
