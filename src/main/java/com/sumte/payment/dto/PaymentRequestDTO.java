@@ -12,7 +12,7 @@ public class PaymentRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreatePaymentDTO {
+    public static class PaymentRequestCreate {
         private Long reservationId;
         private Long amount;
         private PaymentMethod paymentMethod;

@@ -45,3 +45,5 @@ app:
 kakao:
   pay:
     secret-key: ${KAKAOPAY_SECRET_KEY}
+    redirect:
+      domain: ${DOMAIN}

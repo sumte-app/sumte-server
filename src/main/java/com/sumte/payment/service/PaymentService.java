@@ -5,6 +5,6 @@ import com.sumte.payment.dto.PaymentRequestDTO;
 import com.sumte.payment.dto.PaymentResponseDTO;
 
 public interface PaymentService {
-    PaymentResponseDTO.CreatePaymentDTO requestPayment(PaymentRequestDTO.CreatePaymentDTO dto);
+    PaymentResponseDTO.PaymentReadyResponse requestPayment(PaymentRequestDTO.PaymentRequestCreate dto);
     KakaoPayApproveResponseDTO approvePayment(Long paymentId, String pgToken);
 }
