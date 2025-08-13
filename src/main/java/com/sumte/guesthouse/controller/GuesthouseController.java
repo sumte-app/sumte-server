@@ -39,7 +39,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Tag(name = "게스트 하우스 api", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
+@Tag(name = "게스트 하우스 API", description = "게스트하우스 생성/수정/조회/삭제 api 입니다.")
 @RequiredArgsConstructor
 @RequestMapping("/guesthouse")
 public class GuesthouseController {
@@ -108,7 +108,6 @@ public class GuesthouseController {
 					  "addressRegion": "제주특별자치도",
 					  "addressDetail": "서귀포시",
 					  "information": "서귀포 앞바다와 일출이 보이는 전통 한옥 스타일 숙소, 조식 제공",
-					  "imageUrl": "https://sumte-file.s3.ap-northeast-2.amazonaws.com/guesthouse_update_main.png",
 					  "optionServices": ["이벤트"],
 					  "targetAudience": ["애견동반"]
 					}

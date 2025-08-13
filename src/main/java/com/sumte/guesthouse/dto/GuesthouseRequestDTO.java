@@ -26,9 +26,6 @@ public class GuesthouseRequestDTO {
 		@Schema(description = "게스트하우스 소개/정보", example = "시장 도보 10분, 해수욕장 도보 15분 거리")
 		String information;
 
-		@Schema(description = "대표 이미지 URL", example = "https://sumte-file.s3.ap-northeast-2.amazonaws.com/guesthouse_main.png")
-		String imageUrl;
-
 		@Schema(description = "부가 서비스 목록", example = "[\"조식포함\"]")
 		List<String> optionServices;
 
@@ -51,9 +48,6 @@ public class GuesthouseRequestDTO {
 
 		@Schema(description = "게스트하우스 소개/정보", example = "서귀포 앞바다와 일출이 보이는 전통 한옥 스타일 숙소, 조식 제공")
 		String information;
-
-		@Schema(description = "대표 이미지 URL", example = "https://sumte-file.s3.ap-northeast-2.amazonaws.com/guesthouse_update_main.png")
-		String imageUrl;
 
 		@Schema(description = "옵션 서비스 목록", example = "[\"이벤트\"]")
 		List<String> optionServices;

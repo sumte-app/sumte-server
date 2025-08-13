@@ -142,7 +142,9 @@ public class RoomController {
 	)
 	public ApiResponse<List<RoomResponseDTO.RoomSummary>> getRoomsByGuesthouse(
 		@PathVariable Long guesthouseId,
+		@Parameter(description = "체크인 날짜", example = "2025-08-13")
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@Parameter(description = "체크아웃 날짜", example = "2025-08-14")
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
 	) {
 		return ApiResponse.success(roomQueryService.getRoomsByGuesthouse(guesthouseId, startDate, endDate));
