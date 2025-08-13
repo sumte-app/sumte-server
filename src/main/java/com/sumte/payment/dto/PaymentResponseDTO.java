@@ -11,7 +11,7 @@ public class PaymentResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreatePaymentDTO {
+    public static class PaymentReadyResponse {
         private Long paymentId;
         private String paymentUrl;
     }

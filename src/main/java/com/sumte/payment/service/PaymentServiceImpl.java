@@ -24,12 +24,12 @@
         private final PaymentTransactionHelper transactionHelper;
         private final KakaoPayClient kakaoPayClient;
 
-        @Value("${app.host}")
-        private String appHost;
+        @Value("${kakao.pay.redirect.domain}")
+        private String redirectDomain;
 
         @Override
         @Transactional
-        public PaymentResponseDTO.CreatePaymentDTO requestPayment(PaymentRequestDTO.CreatePaymentDTO dto) {
+        public PaymentResponseDTO.PaymentReadyResponse requestPayment(PaymentRequestDTO.PaymentRequestCreate dto) {
             Reservation reservation = reservationRepository.findById(dto.getReservationId())
                     .orElseThrow(() -> new SumteException(PaymentErrorCode.RESERVATION_NOT_FOUND));
 
@@ -53,15 +53,15 @@
                     .quantity("1")
                     .total_amount(String.valueOf(totalAmount))
                     .tax_free_amount("0")
-                    .approval_url(appHost + "/pay/success")
-                    .cancel_url(appHost + "/pay/cancel")
-                    .fail_url(appHost + "/pay/fail")
+                    .approval_url(redirectDomain + "/pay/success")
+                    .cancel_url(redirectDomain  + "/pay/cancel")
+                    .fail_url(redirectDomain  + "/pay/fail")
                     .build();
 
             KakaoPayReadyResponseDTO kakaoResponse = kakaoPayClient.requestPayment(request);
             payment.setTid(kakaoResponse.getTid());
 
-            return PaymentConverter.toCreateResponse(payment, kakaoResponse.getNext_redirect_pc_url());
+            return PaymentConverter.toCreateResponse(payment, kakaoResponse.getNext_redirect_app_url());
         }
 
         @Override

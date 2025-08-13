@@ -1,7 +1,9 @@
 package com.sumte.room.service;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -60,11 +62,29 @@ public class RoomQueryServiceImpl implements RoomQueryService {
 
 	public List<RoomResponseDTO.RoomSummary> getRoomsByGuesthouse(Long guesthouseId, LocalDate startDate,
 		LocalDate endDate) {
+
 		List<Room> rooms = roomRepository.findAllByGuesthouseId(guesthouseId);
+		if (rooms.isEmpty())
+			return List.of();
+
+		// 1) 모든 방 ID 수집
+		List<Long> roomIds = rooms.stream().map(Room::getId).toList();
+
+		// 2) 방 이미지 일괄 조회 (ownerId, sortOrder 로 정렬됨)
+		List<Image> roomImages = imageRepository
+			.findByOwnerTypeAndOwnerIdInOrderByOwnerIdAscSortOrderAsc(OwnerType.ROOM, roomIds);
+
+		// 3) 각 방의 "첫 번째" 이미지 URL만 맵에 저장 (이미 정렬되어 있으므로 putIfAbsent로 최초 1개만)
+		Map<Long, String> firstImageByRoom = new LinkedHashMap<>();
+		for (Image img : roomImages) {
+			firstImageByRoom.putIfAbsent(img.getOwnerId(), img.getUrl());
+		}
+
 		return rooms.stream()
 			.map(room -> {
 				boolean isReserved = reservationRepository.existsOverlappingReservation(room, startDate, endDate);
-				return roomConverter.toRoomSummary(room, !isReserved);
+				String ImageUrl = firstImageByRoom.getOrDefault(room.getId(), null);
+				return roomConverter.toRoomSummary(room, !isReserved, ImageUrl);
 			})
 			.collect(Collectors.toList());
 	}

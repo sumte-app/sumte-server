@@ -15,7 +15,7 @@ public class GuesthousePreviewDTO {
 	private Long id;
 	private String name;
 	private Double averageScore;
-	private Integer reviewCount;
+	private int reviewCount;
 	private Long lowerPrice;
 	private String addressRegion;
 	private LocalTime checkinTime;

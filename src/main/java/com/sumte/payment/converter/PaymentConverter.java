@@ -9,7 +9,7 @@ import com.sumte.reservation.entity.Reservation;
 
 public class PaymentConverter {
 
-    public static Payment toEntity(PaymentRequestDTO.CreatePaymentDTO dto, Reservation reservation) {
+    public static Payment toEntity(PaymentRequestDTO.PaymentRequestCreate dto, Reservation reservation) {
         PaymentMethod method = dto.getPaymentMethod() != null
                 ? dto.getPaymentMethod()
                 : PaymentMethod.KAKAOPAY;
@@ -22,8 +22,8 @@ public class PaymentConverter {
                 .build();
     }
 
-    public static PaymentResponseDTO.CreatePaymentDTO toCreateResponse(Payment payment, String paymentUrl) {
-        return PaymentResponseDTO.CreatePaymentDTO.builder()
+    public static PaymentResponseDTO.PaymentReadyResponse toCreateResponse(Payment payment, String paymentUrl) {
+        return PaymentResponseDTO.PaymentReadyResponse.builder()
                 .paymentId(payment.getId())
                 .paymentUrl(paymentUrl)
                 .build();

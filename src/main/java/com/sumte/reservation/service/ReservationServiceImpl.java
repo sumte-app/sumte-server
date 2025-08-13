@@ -6,6 +6,7 @@ import com.sumte.apiPayload.exception.SumteException;
 import com.sumte.payment.entity.Payment;
 import com.sumte.payment.entity.PaymentStatus;
 import com.sumte.reservation.entity.ReservationStatus;
+import com.sumte.security.userDetail.SumteUserDetails;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
@@ -60,11 +61,18 @@ public class ReservationServiceImpl implements ReservationService {
 		Room room = roomRepository.findById(request.getRoomId())
 			.orElseThrow(() -> new SumteException(ReservationErrorCode.ROOM_NOT_FOUND));
 
-		// 닐짜 유효성 검사
-		if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate()
-			.isEqual(request.getEndDate())) {
+		LocalDate today = LocalDate.now();
+
+		// 날짜 유효성 검사 (현재 날짜보다 이전 날짜인 경우)
+		if (request.getStartDate().isBefore(today) || request.getEndDate().isBefore(today)) {
 			throw new SumteException(ReservationErrorCode.RESERVATION_DATE_INVALID);
 		}
+
+		// 체크인 날짜가 체크아웃 날짜 이후이거나 같은 경우
+		if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate().isEqual(request.getEndDate())) {
+			throw new SumteException(ReservationErrorCode.RESERVATION_DATE_INVALID);
+		}
+
 		// 정원 초과 검사
 		long totalPeople = request.getAdultCount() + request.getChildCount();
 		if (room.getTotalCount() < totalPeople) {
@@ -144,14 +152,21 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private Long currentUserId() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
 
-		Object details = auth.getDetails();
-		if (details instanceof Long id) {
-			return id;
+		if (principal instanceof String username) {
+			return userRepository.findByLoginId(username)
+					.map(u -> {
+						return u.getId();
+					})
+					.orElseThrow(() -> {
+						return new SumteException(CommonErrorCode.USER_NOT_FOUND);
+					});
 		}
-		throw new IllegalStateException("인증 사용자 정보를 확인할 수 없습니다.");
+		throw new SumteException(CommonErrorCode.USER_NOT_FOUND);
 	}
+
 
 	@Override
 	@Transactional
