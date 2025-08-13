@@ -23,4 +23,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 	List<Image> findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(OwnerType ownerType, Long ownerId);
 
 	List<Image> findByOwnerTypeAndOwnerIdInOrderByOwnerIdAscSortOrderAsc(OwnerType ownerType, List<Long> ownerIds);
+
+	void deleteByOwnerTypeAndOwnerId(OwnerType ownerType, Long ownerId);
 }

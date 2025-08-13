@@ -47,6 +47,15 @@ public class ReviewService {
 
 		Review review = ReviewConverter.toEntity(dto, user, room);
 		Review saved = reviewRepository.save(review);
+		List<String> urls = dto.getImageUrls();
+
+		if (urls != null && !urls.isEmpty()) {
+			var imagesToSave = buildReviewImages(saved.getId(), urls);
+			if (!imagesToSave.isEmpty()) {
+				imageRepository.saveAll(imagesToSave);
+			}
+		}
+
 		return saved.getId();
 	}
 
@@ -56,6 +65,23 @@ public class ReviewService {
 		if (opt.isPresent()) {
 			Review review = opt.get();
 			ReviewConverter.updateEntity(review, dto);
+
+			// 이미지 변경 규칙
+			// null  -> 이미지 변경 안 함
+			// []    -> 기존 이미지 모두 삭제
+			// [..]  -> 기존 삭제 후 새로 저장
+			if (dto.getImageUrls() != null) {
+				imageRepository.deleteByOwnerTypeAndOwnerId(OwnerType.REVIEW, reviewId);
+
+				List<String> urls = dto.getImageUrls();
+				if (!urls.isEmpty()) {
+					var imagesToSave = buildReviewImages(reviewId, urls);
+					if (!imagesToSave.isEmpty()) {
+						imageRepository.saveAll(imagesToSave);
+					}
+				}
+			}
+			return null;
 		}
 		// reviewId 자체가 존재하지 않으면 NOT_FOUND로
 		if (!reviewRepository.existsById(reviewId)) {
@@ -175,5 +201,20 @@ public class ReviewService {
 			pageable,
 			reviewPage.getTotalElements()
 		);
+	}
+
+	private List<Image> buildReviewImages(Long reviewId, List<String> rawUrls) {
+		int[] idx = {0};
+		return rawUrls.stream()
+			.filter(u -> u != null && !u.isBlank())
+			.distinct()  // 선택: 중복 제거
+			.limit(10)   // 선택: 최대 10장
+			.map(u -> Image.builder()
+				.ownerType(OwnerType.REVIEW)
+				.ownerId(reviewId)
+				.url(u.trim())
+				.sortOrder(idx[0]++)
+				.build())
+			.toList();
 	}
 }
