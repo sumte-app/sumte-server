@@ -56,6 +56,7 @@ public class ReviewService {
 		if (opt.isPresent()) {
 			Review review = opt.get();
 			ReviewConverter.updateEntity(review, dto);
+			return null;
 		}
 		// reviewId 자체가 존재하지 않으면 NOT_FOUND로
 		if (!reviewRepository.existsById(reviewId)) {
@@ -114,7 +115,9 @@ public class ReviewService {
 				r.getContents(),
 				r.getScore(),
 				r.getUser().getNickname(),
-				r.getCreatedAt()
+				r.getCreatedAt(),
+				r.getRoom().getName(),
+				r.getRoom().getGuesthouse().getName()
 			))
 			.toList();
 
@@ -165,7 +168,9 @@ public class ReviewService {
 				r.getContents(),
 				r.getScore(),
 				r.getUser().getNickname(),
-				r.getCreatedAt()
+				r.getCreatedAt(),
+				r.getRoom().getName(),
+				r.getRoom().getGuesthouse().getName()
 			))
 			.toList();
 

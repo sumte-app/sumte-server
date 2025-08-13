@@ -21,4 +21,7 @@ public class ReviewSearchDto {
 	private int score;
 	private String authorNickname;
 	private LocalDateTime createdAt;  // 리뷰 조회시 작성일자가 보여야하므로
+
+	private String roomName;
+	private String guesthouseName;
 }
