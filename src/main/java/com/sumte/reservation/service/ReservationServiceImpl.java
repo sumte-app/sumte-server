@@ -61,11 +61,18 @@ public class ReservationServiceImpl implements ReservationService {
 		Room room = roomRepository.findById(request.getRoomId())
 			.orElseThrow(() -> new SumteException(ReservationErrorCode.ROOM_NOT_FOUND));
 
-		// 닐짜 유효성 검사
-		if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate()
-			.isEqual(request.getEndDate())) {
+		LocalDate today = LocalDate.now();
+
+		// 날짜 유효성 검사 (현재 날짜보다 이전 날짜인 경우)
+		if (request.getStartDate().isBefore(today) || request.getEndDate().isBefore(today)) {
 			throw new SumteException(ReservationErrorCode.RESERVATION_DATE_INVALID);
 		}
+
+		// 체크인 날짜가 체크아웃 날짜 이후이거나 같은 경우
+		if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate().isEqual(request.getEndDate())) {
+			throw new SumteException(ReservationErrorCode.RESERVATION_DATE_INVALID);
+		}
+
 		// 정원 초과 검사
 		long totalPeople = request.getAdultCount() + request.getChildCount();
 		if (room.getTotalCount() < totalPeople) {
