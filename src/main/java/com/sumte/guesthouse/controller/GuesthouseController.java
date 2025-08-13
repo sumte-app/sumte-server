@@ -108,7 +108,6 @@ public class GuesthouseController {
 					  "addressRegion": "제주특별자치도",
 					  "addressDetail": "서귀포시",
 					  "information": "서귀포 앞바다와 일출이 보이는 전통 한옥 스타일 숙소, 조식 제공",
-					  "imageUrl": "https://sumte-file.s3.ap-northeast-2.amazonaws.com/guesthouse_update_main.png",
 					  "optionServices": ["이벤트"],
 					  "targetAudience": ["애견동반"]
 					}
