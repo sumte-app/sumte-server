@@ -40,11 +40,11 @@ public class ReservationController {
 
 	@PostMapping
 	@Operation(summary = "예약 생성 API", description = "요청 본문으로 객실 ID, 투숙 인원, 날짜 정보를 입력받고, 헤더의 userId를 통해 예약을 생성합니다.")
-	public ResponseEntity<ApiResponse<Void>> createReservation(
+	public ResponseEntity<ApiResponse<ReservationResponseDTO.CreateReservationDTO>> createReservation(
 			@Valid @RequestBody ReservationRequestDTO.CreateReservationDTO request
 	) {
-		reservationService.createReservation(request);
-		return ResponseEntity.ok(ApiResponse.success(null));
+		ReservationResponseDTO.CreateReservationDTO response = reservationService.createReservation(request);
+		return ResponseEntity.ok(ApiResponse.success(response));
 	}
 
 	@GetMapping("/my")
