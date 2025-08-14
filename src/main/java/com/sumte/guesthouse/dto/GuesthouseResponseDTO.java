@@ -78,4 +78,20 @@ public class GuesthouseResponseDTO {
 		private boolean isAd;
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class HomeCard {
+		private Long id;
+		private String name;
+		private String addressRegion;
+		private String addressDetail;
+		private String imageUrl;
+		private Long minPrice;
+		private String checkin;
+		private Long reviewCount;
+		private Double averageScore;
+	}
+
 }

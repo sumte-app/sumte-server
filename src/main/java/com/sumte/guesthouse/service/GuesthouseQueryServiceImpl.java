@@ -13,9 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
+import com.sumte.guesthouse.converter.GuesthouseConverter;
 import com.sumte.guesthouse.dto.GuesthouseDetailDTO;
 import com.sumte.guesthouse.dto.GuesthousePreviewDTO;
 import com.sumte.guesthouse.dto.GuesthouseResponseDTO;
@@ -34,7 +36,6 @@ import com.sumte.room.dto.RoomResponseDTO;
 import com.sumte.room.entity.Room;
 import com.sumte.room.repository.RoomRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -48,6 +49,7 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
 	private final GuesthouseRepositoryCustom guesthouseRepositoryCustom;
 	private final ImageRepository imageRepository;
+	private final GuesthouseConverter guesthouseConverter;
 
 	@Override
 	@Transactional
@@ -254,4 +256,26 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 		// 6) PageImpl 으로 감싸서 반환
 		return new PageImpl<>(dtos, pageable, page.getTotalElements());
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GuesthouseResponseDTO.HomeCard getGuesthouseSummary(Long guesthouseId) {
+		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId)
+			.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST));
+
+		Long minPrice = roomRepository.findMinPriceByGuesthouseId(guesthouseId);
+		String earliestCheckin = roomRepository.findEarliestCheckinByGuesthouseId(guesthouseId);
+		Long reviewCount = (long)reviewRepository.countByGuesthouseId(guesthouseId);
+		Double averageScore = reviewRepository.findAverageScoreByGuesthouseId(guesthouseId);
+
+		// 이미지
+		List<Image> images = imageRepository.findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(OwnerType.GUESTHOUSE,
+			guesthouseId);
+		String imageUrl = images.isEmpty() ? null : images.get(0).getUrl();
+
+		return guesthouseConverter.toHomeCardResponse(
+			guesthouse, minPrice, earliestCheckin, reviewCount, averageScore, imageUrl
+		);
+	}
+
 }
