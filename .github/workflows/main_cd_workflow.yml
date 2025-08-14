@@ -123,7 +123,8 @@ jobs:
             S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
             KAKAOPAY_SECRET_KEY=${{ secrets.KAKAOPAY_SECRET_KEY }}
             DOMAIN=${{ secrets.DOMAIN }}
-
+            MAIL_APP_USERMAIL=${{ secrets.MAIL_APP_USERMAIL }}
+            MAIL_APP_KEY=${{ secrets.MAIL_APP_KEY }}
             EOF
             
             # .env 파일 권한 설정
