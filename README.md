@@ -12,6 +12,8 @@
 팀장: 조용혁  
 팀원: 이서희, 백준규, 장효원
 
+## 2. 기술 스택
+
 ### Java Spring
 - project build : Gradle 
 - Spring Boot : 3.3.4  
@@ -20,6 +22,12 @@
 - IDE : Intellij  
 - 코드 컨벤션: 네이버 코드 컨벤션  
 - 패키지 전략: 도메인 패키지 전략
+
+### 브랜치 전략
+Gutlab Flow 변형 (main[배포] - develop - feature)
+- **main** : 배포 버전
+- **develop** : 개발 통합 브랜치
+- **feature/** : 기능 개발 (예: `feature/reservation-api`)
 
 ### 데이터베이스
 - MySQL
@@ -46,12 +54,6 @@
 - Docker
 - GitHub Actions (CI/CD)
 - VPC 환경 (Public / Private Subnet 분리)
-
-## 2. 브랜치 전략
-Gutlab Flow 변형 (main[배포] - develop - feature)
-- **main** : 배포 버전
-- **develop** : 개발 통합 브랜치
-- **feature/** : 기능 개발 (예: `feature/reservation-api`)
 
 ---
 
