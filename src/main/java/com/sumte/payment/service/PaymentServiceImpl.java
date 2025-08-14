@@ -43,7 +43,6 @@
 
 
             String itemName = reservation.getRoom().getName();
-            Long totalAmount = reservation.getRoom().getPrice();
 
             KakaoPayReadyRequestDTO request = KakaoPayReadyRequestDTO.builder()
                     .cid("TC0ONETIME")
@@ -51,7 +50,7 @@
                     .partner_user_id("user_" + reservation.getUser().getId())
                     .item_name(itemName)
                     .quantity("1")
-                    .total_amount(String.valueOf(totalAmount))
+                    .total_amount(String.valueOf(dto.getAmount()))
                     .tax_free_amount("0")
                     .approval_url(redirectDomain + "/pay/success")
                     .cancel_url(redirectDomain  + "/pay/cancel")
