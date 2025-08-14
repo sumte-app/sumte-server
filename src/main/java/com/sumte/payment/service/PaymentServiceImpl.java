@@ -52,9 +52,9 @@ public class PaymentServiceImpl implements PaymentService {
                 .quantity("1")
                 .total_amount(String.valueOf(dto.getAmount()))
                 .tax_free_amount("0")
-                .approval_url(redirectDomain + "/pay/success")
-                .cancel_url(redirectDomain  + "/pay/cancel")
-                .fail_url(redirectDomain  + "/pay/fail")
+                .approval_url(redirectDomain + "/pay/success?paymentId=" + payment.getId())
+                .cancel_url(redirectDomain  + "/pay/cancel?paymentId=" + payment.getId())
+                .fail_url(redirectDomain    + "/pay/fail?paymentId=" + payment.getId())
                 .build();
 
         KakaoPayReadyResponseDTO kakaoResponse = kakaoPayClient.requestPayment(request);
