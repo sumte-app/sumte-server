@@ -97,24 +97,24 @@ public class ReservationServiceImpl implements ReservationService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new SumteException(CommonErrorCode.USER_NOT_FOUND));
 
-		Page<Reservation> reservations = reservationRepository.findAllByUser(user, pageable);
+		Page<Reservation> reservations = reservationRepository.findAllPaidByUser(user, pageable);
+
 		return reservations.map(reservation -> {
 			boolean isComplete = reservation.getReservationStatus().equals(ReservationStatus.COMPLETED);
 
-			boolean reviewWritten = reviewRepository.existsByUserIdAndRoomGuesthouseId(user.getId(),
-				reservation.getRoom().getGuesthouse().getId());
+			boolean reviewWritten = reviewRepository.existsByUserIdAndRoomGuesthouseId(
+					user.getId(), reservation.getRoom().getGuesthouse().getId()
+			);
 			boolean canWriteReview = isComplete && !reviewWritten;
 
-			// 첫 번째 방 이미지 URL 조회
 			String firstImageUrl = imageRepository
-				.findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(
-					OwnerType.ROOM,
-					reservation.getRoom().getId()
-				)
-				.stream()
-				.map(Image::getUrl)
-				.findFirst()
-				.orElse(null);
+					.findByOwnerTypeAndOwnerIdOrderBySortOrderAsc(
+							OwnerType.ROOM, reservation.getRoom().getId()
+					)
+					.stream()
+					.map(Image::getUrl)
+					.findFirst()
+					.orElse(null);
 
 			return reservationConverter.toMyReservationDTO(reservation, firstImageUrl, canWriteReview, reviewWritten);
 		});

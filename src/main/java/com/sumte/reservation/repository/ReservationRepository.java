@@ -25,8 +25,19 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                          @Param("startDate") LocalDate startDate,
                                          @Param("endDate") LocalDate endDate);
 
-	Page<Reservation> findAllByUser(User user, Pageable pageable);
-
 	List<Reservation> findByReservationStatusNot(ReservationStatus status);
+
+	@Query("""
+select r
+from Reservation r
+where r.user = :user
+  and exists (
+    select 1
+    from Payment p
+    where p.reservation = r
+      and p.paymentStatus = com.sumte.payment.entity.PaymentStatus.PAID
+  )
+""")
+	Page<Reservation> findAllPaidByUser(@Param("user") User user, Pageable pageable);
 
 }
