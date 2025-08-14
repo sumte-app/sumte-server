@@ -123,14 +123,6 @@ public class GuesthouseController {
 		return ResponseEntity.ok(guesthouseId);
 	}
 
-	// @Operation(summary = "홈 화면 게스트하우스 목록 조회 (광고 우선)", description = "게스트하우스 목록을 보여줍니다")
-	// @GetMapping("/home")
-	// public ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>> getGuesthousesForHome(
-	// 	@ParameterObject
-	// 	@PageableDefault(size = 10) Pageable pageable) {
-	// 	return ApiResponse.success(guesthouseQueryService.getGuesthousesForHome(pageable));
-	// }
-
 	@GetMapping("/home")
 	@Operation(summary = "홈 화면 조회", description = "홈 화면에 출력할 홈 화면 전용 게스트하우스 조회 API입니다.")
 	public ResponseEntity<ApiResponse<Slice<GuesthouseResponseDTO.HomeSummary>>> getGuesthousesForHome(

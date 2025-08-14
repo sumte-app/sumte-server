@@ -65,12 +65,12 @@ public class RoomController {
 			)
 		)
 	)
-	public ApiResponse<Long> registerRoom(
+	public ResponseEntity<ApiResponse<Long>> registerRoom(
 		@PathVariable Long guesthouseId,
 		@RequestBody @Valid RoomRequestDTO.RegisterRoom dto) {
 		RoomResponseDTO.Registered room = roomCommandService.registerRoom(dto, guesthouseId);
 		Long roomId = room.getRoomId();
-		return ApiResponse.created(roomId);
+		return ResponseEntity.ok(ApiResponse.created(roomId));
 	}
 
 	@PatchMapping("/{guesthouseId}/room/{roomId}")
@@ -100,12 +100,12 @@ public class RoomController {
 			)
 		)
 	)
-	public ApiResponse<Long> updateRoom(
+	public ResponseEntity<ApiResponse<Long>> updateRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId,
 		@RequestBody @Valid RoomRequestDTO.UpdateRoom dto
 	) {
 		roomCommandService.updateRoom(dto, guesthouseId, roomId);
-		return ApiResponse.success(roomId);
+		return ResponseEntity.ok(ApiResponse.success(roomId));
 	}
 
 	@DeleteMapping("/{guesthouseId}/room/{roomId}")
@@ -114,12 +114,12 @@ public class RoomController {
 		@Parameter(name = "guesthouseId", description = "숙소 아이디를 넘겨주세요"),
 		@Parameter(name = "roomId", description = "방 아이디를 넘겨주세요.")
 	})
-	public ApiResponse<Void> deleteRoom(
+	public ResponseEntity<ApiResponse<Void>> deleteRoom(
 		@PathVariable Long guesthouseId, @PathVariable Long roomId
 	) {
 		roomCommandService.deleteRoom(roomId, guesthouseId);
 
-		return ApiResponse.successWithNoData();
+		return ResponseEntity.ok(ApiResponse.successWithNoData());
 
 	}
 
@@ -135,19 +135,20 @@ public class RoomController {
 		return ResponseEntity.ok(ApiResponse.success(result));
 	}
 
-	@GetMapping("/guesthouse/{guesthouseId}/rooms")
+	@GetMapping("/{guesthouseId}/rooms")
 	// @Operation(summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준 예약 가능한 객실만 필터링하거나 전체 보여줄 수 있습니다.")
 	@Operation(
 		summary = "특정 게스트하우스의 객실 목록 조회", description = "선택한 날짜 기준으로 예약 가능한 객실만 필터링하거나 전체를 조회할 수 있습니다.\n각 방마다 예약 가능 여부가 포함되어 응답됩니다."
 	)
-	public ApiResponse<List<RoomResponseDTO.RoomSummary>> getRoomsByGuesthouse(
+	public ResponseEntity<ApiResponse<List<RoomResponseDTO.RoomSummary>>> getRoomsByGuesthouse(
 		@PathVariable Long guesthouseId,
 		@Parameter(description = "체크인 날짜", example = "2025-08-13")
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 		@Parameter(description = "체크아웃 날짜", example = "2025-08-14")
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
 	) {
-		return ApiResponse.success(roomQueryService.getRoomsByGuesthouse(guesthouseId, startDate, endDate));
+		return ResponseEntity.ok(
+			ApiResponse.success(roomQueryService.getRoomsByGuesthouse(guesthouseId, startDate, endDate)));
 	}
 
 }

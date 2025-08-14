@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sumte.apiPayload.ApiResponse;
 import com.sumte.review.dto.ReviewRequestDto;
 import com.sumte.review.dto.ReviewSearchDto;
 import com.sumte.review.service.ReviewService;
 import com.sumte.security.authorization.UserId;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,21 +39,38 @@ public class ReviewController {
 
 	@Operation(summary = "리뷰 등록")
 	@PostMapping
-	public ResponseEntity<Long> createReview(
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(
+		description = "리뷰 등록 요청",
+		required = true,
+		content = @Content(
+			schema = @Schema(implementation = ReviewRequestDto.class),
+			examples = @ExampleObject(
+				name = "Guesthouse Update Example",
+				value = """
+					{
+					  "roomId": 1,
+					  "contents": "정~밀 조으네요..",
+					  "score": 5
+					}
+					"""
+			)
+		)
+	)
+	public ResponseEntity<ApiResponse<Long>> createReview(
 		@UserId Long userId,
 		@RequestBody @Valid ReviewRequestDto dto) {
 		Long reviewId = reviewService.createReview(userId, dto);
-		return ResponseEntity.ok(reviewId);
+		return ResponseEntity.ok(ApiResponse.success(reviewId));
 	}
 
 	@Operation(summary = "리뷰 수정")
 	@PatchMapping("/{reviewId}")
-	public ResponseEntity<Long> updateReview(
+	public ResponseEntity<ApiResponse<Long>> updateReview(
 		@UserId Long userId,
 		@PathVariable Long reviewId,
 		@RequestBody @Valid ReviewRequestDto dto) {
 		reviewService.updateReview(userId, reviewId, dto);
-		return ResponseEntity.ok(reviewId);
+		return ResponseEntity.ok(ApiResponse.success(reviewId));
 	}
 
 	@Operation(summary = "리뷰 삭제")

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sumte.apiPayload.ApiResponse;
 import com.sumte.security.authorization.UserId;
 import com.sumte.user.dto.FavoriteResponseDto;
 import com.sumte.user.service.FavoriteService;
@@ -25,14 +26,14 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "찜", description = "찜 관련 API")
 @RestController
-@RequestMapping("/api/favorites")
+@RequestMapping("/favorites")
 @RequiredArgsConstructor
 public class FavoriteController {
 	private final FavoriteService favService;
 
 	@Operation(summary = "찜 추가")
 	@PostMapping("/{guesthouseId}")
-	public ResponseEntity<Void> addFavorite(
+	public ResponseEntity<ApiResponse<Void>> addFavorite(
 		@PathVariable Long guesthouseId,
 		@UserId Long userId
 	) {
