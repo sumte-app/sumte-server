@@ -56,4 +56,25 @@ public class GuesthouseConverter {
 			.isAd(guesthouse.getAdvertisement() == AdType.AD)
 			.build();
 	}
+
+	public GuesthouseResponseDTO.HomeCard toHomeCardResponse(
+		Guesthouse guesthouse,
+		Long minPrice,
+		String earliestCheckin,
+		Long reviewCount,
+		Double averageScore,
+		String imageUrl
+	) {
+		return GuesthouseResponseDTO.HomeCard.builder()
+			.id(guesthouse.getId())
+			.name(guesthouse.getName())
+			.addressRegion(guesthouse.getAddressRegion())
+			.addressDetail(guesthouse.getAddressDetail())
+			.minPrice(minPrice)
+			.checkin(earliestCheckin)
+			.reviewCount(reviewCount)
+			.averageScore(averageScore)
+			.imageUrl(imageUrl)
+			.build();
+	}
 }
