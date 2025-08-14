@@ -15,4 +15,6 @@ public interface GuesthouseQueryService {
 	Page<GuesthousePreviewDTO> getFilteredGuesthouse(GuesthouseSearchRequestDTO dto, Pageable pageable);
 
 	Slice<GuesthouseResponseDTO.HomeSummary> getGuesthousesForHome(Pageable pageable);
+
+	GuesthouseResponseDTO.HomeCard getGuesthouseSummary(Long guesthouseId);
 }

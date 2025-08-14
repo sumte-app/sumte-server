@@ -40,4 +40,42 @@ where r.user = :user
 """)
 	Page<Reservation> findAllPaidByUser(@Param("user") User user, Pageable pageable);
 
+	@Query("""
+    select r from Reservation r
+    where r.room.guesthouse.id = :guesthouseId
+      and r.reservationStatus <> com.sumte.reservation.entity.ReservationStatus.CANCELED
+      and exists (
+          select 1
+          from Payment p
+          where p.reservation = r
+            and p.paymentStatus = com.sumte.payment.entity.PaymentStatus.PAID
+      )
+      and r.startDate < :endExclusive
+      and r.endDate > :startInclusive
+    """)
+	List<Reservation> findActivePaidByGuesthouseAndOverlap(
+			@Param("guesthouseId") Long guesthouseId,
+			@Param("startInclusive") java.time.LocalDate startInclusive,
+			@Param("endExclusive") java.time.LocalDate endExclusive
+	);
+
+	@Query("""
+    select r from Reservation r
+    where r.room = :room
+      and r.reservationStatus <> com.sumte.reservation.entity.ReservationStatus.CANCELED
+      and exists (
+          select 1
+          from Payment p
+          where p.reservation = r
+            and p.paymentStatus = com.sumte.payment.entity.PaymentStatus.PAID
+      )
+      and r.startDate < :endExclusive
+      and r.endDate > :startInclusive
+    """)
+	List<Reservation> findActivePaidByRoomAndOverlap(
+			@Param("room") com.sumte.room.entity.Room room,
+			@Param("startInclusive") java.time.LocalDate startInclusive,
+			@Param("endExclusive") java.time.LocalDate endExclusive
+	);
+
 }

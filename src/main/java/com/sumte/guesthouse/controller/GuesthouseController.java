@@ -201,4 +201,12 @@ public class GuesthouseController {
 
 	}
 
+	@GetMapping("/guesthouses/{guesthouseId}/summary")
+	@Operation(
+		summary = "게스트하우스 요약 조회",
+		description = "게스트하우스 ID를 기반으로 게스트하우스 상세정보를 조회합니다.")
+	public ApiResponse<GuesthouseResponseDTO.HomeCard> getGuesthouseSummary(@PathVariable Long guesthouseId) {
+		return ApiResponse.success(guesthouseQueryService.getGuesthouseSummary(guesthouseId));
+	}
+
 }

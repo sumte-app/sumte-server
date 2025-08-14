@@ -151,4 +151,24 @@ public class RoomController {
 			ApiResponse.success(roomQueryService.getRoomsByGuesthouse(guesthouseId, startDate, endDate)));
 	}
 
+	// 1) 게스트하우스: 앞으로 3개월간 모든 객실 매진일
+	@GetMapping("/{guesthouseId}/fully-booked-dates")
+	@Operation(summary = "게스트하우스 3개월 매진일 조회",
+			description = "현재 날짜부터 3개월 동안 해당 게스트하우스의 모든 객실이 점유된 날짜 목록을 반환합니다.")
+	public ApiResponse<List<LocalDate>> getFullyBookedDatesOfGuesthouse(
+			@PathVariable Long guesthouseId
+	) {
+		return ApiResponse.success(roomQueryService.getFullyBookedDatesOfGuesthouse(guesthouseId));
+	}
+
+	// 2) 객실: 앞으로 3개월간 예약 불가일
+	@GetMapping("/room/{roomId}/unavailable-dates")
+	@Operation(summary = "객실 3개월 예약 불가일 조회",
+			description = "현재 날짜부터 3개월 동안 해당 객실이 예약 불가한 날짜 목록을 반환합니다.")
+	public ApiResponse<List<LocalDate>> getUnavailableDatesOfRoom(
+			@PathVariable Long roomId
+	) {
+		return ApiResponse.success(roomQueryService.getUnavailableDatesOfRoom(roomId));
+	}
+
 }
