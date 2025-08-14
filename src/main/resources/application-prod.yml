@@ -17,6 +17,19 @@ spring:
       hibernate:
         format_sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_APP_USERMAIL}
+    password: ${MAIL_APP_KEY}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
 jwt:
   secret: ${JWT_SECRET}
 
@@ -41,6 +54,11 @@ management:
 
 app:
   host: ${EC2_HOST}
+  email-verification:
+    code-length: 6              # 인증코드 자리수
+    ttl-seconds: 600            # 10분(600초) 내 인증
+    resend-cooldown-seconds: 10 # 재전송 쿨다운(60초)
+    from: "no-reply@sumte.com"  # 발신자 표기 (SMTP/콘솔 공통)
 
 kakao:
   pay:
