@@ -1,0 +1,67 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  application:
+    name: sumte
+  datasource:
+    url: jdbc:mysql://${RDS_HOST}:${RDS_PORT}/${RDS_DB}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_APP_USERMAIL}
+    password: ${MAIL_APP_KEY}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+jwt:
+  secret: ${JWT_SECRET}
+
+cloud:
+  aws:
+    region: ap-northeast-2
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    s3:
+      bucket: sumte-file
+      url-prefix: https://sumte-file.s3.ap-northeast-2.amazonaws.com
+    stack:
+      auto: false
+
+# spring actuator 활용한 도커 헬스체크용
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  host: ${EC2_HOST}
+  email-verification:
+    code-length: 6              # 인증코드 자리수
+    ttl-seconds: 600            # 10분(600초) 내 인증
+    resend-cooldown-seconds: 10 # 재전송 쿨다운(60초)
+    from: "no-reply@sumte.com"  # 발신자 표기 (SMTP/콘솔 공통)
+
+kakao:
+  pay:
+    secret-key: ${KAKAOPAY_SECRET_KEY}
+    redirect:
+      domain: ${DOMAIN}
