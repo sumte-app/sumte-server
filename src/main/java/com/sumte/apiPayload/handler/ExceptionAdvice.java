@@ -1,10 +1,10 @@
 package com.sumte.apiPayload.handler;
 
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,9 +17,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sumte.apiPayload.ApiResponse;
 import com.sumte.apiPayload.code.error.CommonErrorCode;
+import com.sumte.apiPayload.code.error.EmailErrorCode;
 import com.sumte.apiPayload.code.error.ErrorCode;
 import com.sumte.apiPayload.exception.SumteException;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,11 +51,26 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
 		log.warn("handleConstraintViolationException");
 
+		//Email 전용 코드로
+		var first = ex.getConstraintViolations().stream().findFirst();
+		if (first.isPresent()) {
+			var v = first.get();
+			String path = v.getPropertyPath() != null ? v.getPropertyPath().toString() : "";
+			String msg = v.getMessage();
+
+			if (path.toLowerCase().contains("email")) {
+				return handleExceptionInternal(
+					EmailErrorCode.INVALID_EMAIL_FORMAT,
+					msg != null ? msg : EmailErrorCode.INVALID_EMAIL_FORMAT.getMessage()
+				);
+			}
+		}
+
 		String message = ex.getConstraintViolations()
-				.stream()
-				.findFirst()
-				.map(violation -> violation.getMessage())
-				.orElse(CommonErrorCode.INVALID_PARAMETER.getMessage());
+			.stream()
+			.findFirst()
+			.map(violation -> violation.getMessage())
+			.orElse(CommonErrorCode.INVALID_PARAMETER.getMessage());
 
 		return handleExceptionInternal(CommonErrorCode.INVALID_PARAMETER, message);
 	}
@@ -71,6 +88,17 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 		HttpStatusCode status, WebRequest request) {
 
 		log.warn("MethodArgumentNotValidException ");
+
+		//email 필드 검증 실패시
+		FieldError fe = e.getBindingResult().getFieldErrors().stream()
+			.findFirst()
+			.orElse(null);
+		if (fe != null && "email".equals(fe.getField())) {
+			String msg = fe.getDefaultMessage() != null ? fe.getDefaultMessage()
+				: EmailErrorCode.INVALID_EMAIL_FORMAT.getMessage();
+			return handleExceptionInternal(EmailErrorCode.INVALID_EMAIL_FORMAT, msg);
+		}
+
 		ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
 		return handleExceptionInternal(errorCode, getDefaultMessage(e));
 	}
