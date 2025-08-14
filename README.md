@@ -10,7 +10,7 @@ Sumte Server는 **게스트하우스 예약·결제·리뷰·관리** 기능을 
 - packaging : jar
 - IDE : Intellij  
 - 코드 컨벤션: 네이버 코드 컨벤션  
-- Git branch 전략: Gutlab Flow 변형
+- Git branch 전략: Gutlab Flow 변형 (main[배포] - develop - feature)
 - 패키지 전략: 도메인 패키지 전략
 
 ### 데이터베이스
@@ -24,6 +24,9 @@ Sumte Server는 **게스트하우스 예약·결제·리뷰·관리** 기능을 
 - Spring Boot Devtools
 - Springdoc
 - Spring Security
+
+### 서버 아키텍처 다이어그램
+<img width="1920" height="1080" alt="UMC_숨터_백엔드-007" src="https://github.com/user-attachments/assets/ff44c0d0-4636-4594-bb3f-d3de6bf26505" />
 
 ### DevOps & Infra
 - AWS EC2 / RDS / S3
