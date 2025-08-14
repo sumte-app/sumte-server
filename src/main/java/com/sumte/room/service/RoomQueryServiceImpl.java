@@ -1,11 +1,10 @@
 package com.sumte.room.service;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.sumte.reservation.entity.Reservation;
 import org.springframework.stereotype.Service;
 
 import com.sumte.apiPayload.code.error.CommonErrorCode;
@@ -87,5 +86,60 @@ public class RoomQueryServiceImpl implements RoomQueryService {
 				return roomConverter.toRoomSummary(room, !isReserved, ImageUrl);
 			})
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional
+	public List<LocalDate> getFullyBookedDatesOfGuesthouse(Long guesthouseId) {
+		LocalDate start = LocalDate.now();
+		LocalDate endExclusive = start.plusMonths(3);
+
+		long totalRooms = roomRepository.countByGuesthouseId(guesthouseId);
+		if (totalRooms == 0) return List.of();
+
+		List<Reservation> reservations =
+				reservationRepository.findActivePaidByGuesthouseAndOverlap(guesthouseId, start, endExclusive);
+
+		Map<LocalDate, Integer> occupiedCountByDate = new HashMap<>();
+		for (Reservation r : reservations) {
+			LocalDate s = r.getStartDate().isBefore(start) ? start : r.getStartDate();
+			LocalDate e = r.getEndDate().isAfter(endExclusive) ? endExclusive : r.getEndDate();
+
+			for (LocalDate d = s; d.isBefore(e); d = d.plusDays(1)) {
+				occupiedCountByDate.merge(d, 1, Integer::sum);
+			}
+		}
+
+		List<LocalDate> fullyBooked = new ArrayList<>();
+		for (LocalDate d = start; d.isBefore(endExclusive); d = d.plusDays(1)) {
+			if (occupiedCountByDate.getOrDefault(d, 0) >= totalRooms) {
+				fullyBooked.add(d);
+			}
+		}
+		return fullyBooked;
+	}
+
+	@Override
+	@Transactional
+	public List<LocalDate> getUnavailableDatesOfRoom(Long roomId) {
+		Room room = roomRepository.findById(roomId)
+				.orElseThrow(() -> new SumteException(CommonErrorCode.NOT_EXIST_ROOM));
+
+		LocalDate start = LocalDate.now();
+		LocalDate endExclusive = start.plusMonths(3);
+
+		List<Reservation> reservations =
+				reservationRepository.findActivePaidByRoomAndOverlap(room, start, endExclusive);
+
+		Set<LocalDate> unavailable = new LinkedHashSet<>();
+		for (Reservation r : reservations) {
+			LocalDate s = r.getStartDate().isBefore(start) ? start : r.getStartDate();
+			LocalDate e = r.getEndDate().isAfter(endExclusive) ? endExclusive : r.getEndDate();
+
+			for (LocalDate d = s; d.isBefore(e); d = d.plusDays(1)) {
+				unavailable.add(d);
+			}
+		}
+		return new ArrayList<>(unavailable);
 	}
 }

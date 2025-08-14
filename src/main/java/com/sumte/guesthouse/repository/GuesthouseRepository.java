@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.sumte.guesthouse.entity.Guesthouse;
 
@@ -26,4 +27,11 @@ public interface GuesthouseRepository extends JpaRepository<Guesthouse, Long> {
 
 		//리뷰는 Page로 했는데 Slice로 수정해도 괜찮을거 같음 (확인 -> 전체 요소수는 필요없으니)
 	Slice<Guesthouse> findAllOrderedForHome(Pageable pageable);
+
+	//홈카드용
+	@Query("SELECT COUNT(r) FROM Review r WHERE r.room.guesthouse.id = :guesthouseId")
+	Long countByGuesthouseId(@Param("guesthouseId") Long guesthouseId);
+
+	@Query("SELECT AVG(r.score) FROM Review r WHERE r.room.guesthouse.id = :guesthouseId")
+	Double findAverageScoreByGuesthouseId(@Param("guesthouseId") Long guesthouseId);
 }

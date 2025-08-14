@@ -14,5 +14,6 @@ public class PaymentResponseDTO {
     public static class PaymentReadyResponse {
         private Long paymentId;
         private String paymentUrl;
+        private String appScheme;
     }
 }

@@ -22,10 +22,11 @@ public class PaymentConverter {
                 .build();
     }
 
-    public static PaymentResponseDTO.PaymentReadyResponse toCreateResponse(Payment payment, String paymentUrl) {
+    public static PaymentResponseDTO.PaymentReadyResponse toCreateResponse(Payment payment, String paymentUrl, String appScheme) {
         return PaymentResponseDTO.PaymentReadyResponse.builder()
                 .paymentId(payment.getId())
                 .paymentUrl(paymentUrl)
+                .appScheme(appScheme)
                 .build();
     }
 
