@@ -1,7 +1,13 @@
 # 🌐 Sumte Server
+<img width="120" height="120" alt="sumte1" src="https://github.com/user-attachments/assets/7a33872c-a376-4d23-86d1-5ae7b16cacf8" />
 
 ## 1. 프로젝트 소개
-Sumte Server는 **게스트하우스 예약·결제·리뷰·관리** 기능을 제공하는 백엔드 서버입니다.  
+**숨터**는 나에게 꼭 맞는 게스트하우스를 찾아주는 숙박 서비스입니다.
+제주 전역의 게스트하우스를 검색하고, 위치·시설·이벤트(파티,조식 등)까지 세부 필터링이 가능합니다.
+단순 숙소 예약을 넘어, 머무는 동안 더 깊이 있는 경험과 인연을 만들 수 있도록 돕습니다.
+
+팀장: 조용혁
+팀원: 이서희, 백준규, 장효원
 
 ### Java Spring
 - project build : Gradle 
