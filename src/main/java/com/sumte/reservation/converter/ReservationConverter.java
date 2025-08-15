@@ -49,7 +49,7 @@ public class ReservationConverter {
 			.endDate(reservation.getEndDate())
 			.adultCount(reservation.getAdultCount())
 			.childCount(reservation.getChildCount())
-			.nightCount(nightCount).roomId(room.getId())
+			.nightCount(nightCount)
 			.status(reservation.getReservationStatus())
 			.canWriteReview(canWriteReview)
 			.reviewWritten(reviewWritten)
