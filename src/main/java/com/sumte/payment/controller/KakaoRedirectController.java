@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,14 +39,19 @@ public class KakaoRedirectController {
             @RequestParam Long paymentId,
             @RequestParam("pg_token") String pgToken) {
 
+        log.info("[KAKAO SUCCESS] paymentId={}, pg_token={}", paymentId, pgToken);
+
         String deepLink = UriComponentsBuilder.newInstance()
-                .scheme(scheme).host(host).path("/success")
+                .scheme("myapp").host("pay").path("/success")
                 .queryParam("paymentId", paymentId)
                 .queryParam("pg_token", pgToken)
-                .build().toUriString();
+                .build(true).toUriString();
+
+        log.info("DeepLink constructed: {}", deepLink);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(deepLink));
+        log.info("Responding 302 with Location: {}", headers.getLocation());
         return ResponseEntity.status(HttpStatus.FOUND)
                 .headers(headers)
                 .body(ApiResponse.success(deepLink));
