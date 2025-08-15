@@ -65,3 +65,6 @@ kakao:
     secret-key: ${KAKAOPAY_SECRET_KEY}
     redirect:
       domain: ${DOMAIN}
+    android:
+      scheme : myapp
+      host : pay
