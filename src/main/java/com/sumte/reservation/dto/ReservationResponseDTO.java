@@ -33,6 +33,7 @@ public class ReservationResponseDTO {
 		private int nightCount;
 		private ReservationStatus status;
 
+		private Long roomId;
 		private boolean canWriteReview;
 		private boolean reviewWritten;
 	}
