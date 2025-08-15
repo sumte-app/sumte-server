@@ -1,13 +1,14 @@
 package com.sumte.reservation.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import com.sumte.reservation.entity.ReservationStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ReservationResponseDTO {
 
@@ -25,6 +26,7 @@ public class ReservationResponseDTO {
 		private Long id;
 		private String guestHouseName;
 		private String roomName;
+		private Long roomId;
 		private String imageUrl;
 		private LocalDate startDate;
 		private LocalDate endDate;
