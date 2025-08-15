@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 public class GuesthouseDetailDTO {
 	private Long id;
 	private String name;
+	private Long reviewCount;
+	private Double averageScore;
 	private String addressRegion;
 	private String addressDetail;
 	private String information;

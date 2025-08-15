@@ -44,6 +44,7 @@ public class ReservationConverter {
 			.id(reservation.getId())
 			.guestHouseName(guestHouse.getName())
 			.roomName(room.getName())
+			.roomId(room.getId())
 			.imageUrl(firstRoomImageUrl)
 			.startDate(reservation.getStartDate())
 			.endDate(reservation.getEndDate())
