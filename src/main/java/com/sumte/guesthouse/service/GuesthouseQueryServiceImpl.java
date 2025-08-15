@@ -111,6 +111,12 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 		return GuesthouseDetailDTO.builder()
 			.id(gh.getId())
 			.name(gh.getName())
+			.reviewCount(Long.valueOf(reviewRepository.countByGuesthouseId(gh.getId())))
+			.averageScore(
+				Optional.ofNullable(
+					reviewRepository.findAverageScoreByGuesthouseId(gh.getId())
+				).orElse(0.0)
+			)
 			.addressRegion(gh.getAddressRegion())
 			.addressDetail(gh.getAddressDetail())
 			.information(gh.getInformation())
