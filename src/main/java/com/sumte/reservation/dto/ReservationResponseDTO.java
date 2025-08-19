@@ -27,6 +27,7 @@ public class ReservationResponseDTO {
 		private String guestHouseName;
 		private String roomName;
 		private Long roomId;
+		private LocalDateTime reservedAt;
 		private String imageUrl;
 		private LocalDate startDate;
 		private LocalDate endDate;

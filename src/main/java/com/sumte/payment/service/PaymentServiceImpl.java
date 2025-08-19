@@ -91,4 +91,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         return response;
     }
+
+    @Override
+    @Transactional
+    public void approvePaymentManually(Long paymentId) {
+        paymentRepository.findById(paymentId)
+                .ifPresent(Payment::markAsPaid); // 없으면 아무 것도 안 함 (예외 X)
+    }
 }

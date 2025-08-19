@@ -41,20 +41,38 @@ public class KakaoRedirectController {
 
         log.info("[KAKAO SUCCESS] paymentId={}, pg_token={}", paymentId, pgToken);
 
-        String deepLink = UriComponentsBuilder.newInstance()
-                .scheme("myapp").host("pay").path("/success")
-                .queryParam("paymentId", paymentId)
-                .queryParam("pg_token", pgToken)
-                .build(true).toUriString();
+        String query = "paymentId=" + paymentId
+                + "&pg_token=" + java.net.URLEncoder.encode(pgToken, java.nio.charset.StandardCharsets.UTF_8);
 
-        log.info("DeepLink constructed: {}", deepLink);
+        String intentUrl = "intent://pay/success?" + query
+                + "#Intent;scheme=myapp;package=com.example.sumte;end";
+
+        log.info("Intent URL constructed: {}", intentUrl);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(deepLink));
+        headers.setLocation(java.net.URI.create(intentUrl));
         log.info("Responding 302 with Location: {}", headers.getLocation());
+
+        // 바디엔 확인용으로 동일 문자열 내려줌
         return ResponseEntity.status(HttpStatus.FOUND)
                 .headers(headers)
-                .body(ApiResponse.success(deepLink));
+                .body(ApiResponse.success(intentUrl));
+
+//        String deepLink = UriComponentsBuilder.newInstance()
+//                .scheme("myapp").host("pay").path("/success")
+//                .queryParam("paymentId", paymentId)
+//                .queryParam("pg_token", pgToken)
+//                .build(true).toUriString();
+//
+//        log.info("DeepLink constructed: {}", deepLink);
+
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setLocation(URI.create(deepLink));
+//        log.info("Responding 302 with Location: {}", headers.getLocation());
+//
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .headers(headers)
+//                .body(ApiResponse.success(deepLink));
     }
 
     @GetMapping("/pay/cancel")

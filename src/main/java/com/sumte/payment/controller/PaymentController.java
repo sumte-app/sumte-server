@@ -49,4 +49,14 @@ public class PaymentController {
 		KakaoPayApproveResponseDTO response = paymentService.approvePayment(id, pgToken);
 		return ResponseEntity.ok(ApiResponse.success(response));
 	}
+
+	@PatchMapping("/{id}/approve/manual")
+	@Operation(
+			summary = "임의 결제 승인 API (테스트/관리자용)",
+			description = "paymentId로 결제를 강제 승인(PAID) 처리합니다."
+	)
+	public ResponseEntity<ApiResponse<String>> approvePaymentManually(@PathVariable("id") Long id) {
+		paymentService.approvePaymentManually(id);
+		return ResponseEntity.ok(ApiResponse.success("PAID"));
+	}
 }
