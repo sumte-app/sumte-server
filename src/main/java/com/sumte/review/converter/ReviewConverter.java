@@ -1,5 +1,6 @@
 package com.sumte.review.converter;
 
+import com.sumte.reservation.entity.Reservation;
 import com.sumte.review.dto.ReviewRequestDto;
 import com.sumte.review.dto.ReviewResponseDto;
 import com.sumte.review.entity.Review;
@@ -8,10 +9,11 @@ import com.sumte.user.entity.User;
 
 public class ReviewConverter {
 
-	public static Review toEntity(ReviewRequestDto dto, User user, Room room) {
+	public static Review toEntity(ReviewRequestDto dto, User user, Reservation reservation) {
 		return Review.builder()
 			.user(user)
-			.room(room)
+			.room(reservation.getRoom())
+				.reservation(reservation)
 			.contents(dto.getContents())
 			.score(dto.getScore())
 			.build();
@@ -24,11 +26,12 @@ public class ReviewConverter {
 
 	public static ReviewResponseDto toDto(Review review) {
 		return new ReviewResponseDto(
-			review.getId(),
-			review.getUser().getId(),
-			review.getRoom().getId(),
-			review.getContents(),
-			review.getScore()
+				review.getId(),
+				review.getUser().getId(),
+				review.getRoom().getId(),
+				review.getReservation() != null ? review.getReservation().getId() : null,
+				review.getContents(),
+				review.getScore()
 		);
 	}
 }

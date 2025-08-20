@@ -1,6 +1,7 @@
 package com.sumte.review.entity;
 
 import com.sumte.jpa.BaseTimeEntity;
+import com.sumte.reservation.entity.Reservation;
 import com.sumte.room.entity.Room;
 import com.sumte.user.entity.User;
 
@@ -34,6 +35,10 @@ public class Review extends BaseTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id")
 	private Room room;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "reservation_id")
+	private Reservation reservation;
 
 	private String contents;
 	private int score;
