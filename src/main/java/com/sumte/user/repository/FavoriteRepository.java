@@ -28,4 +28,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 		"where f.user.id = :userId and f.guesthouse.id in :guesthouseIds")
 	List<Long> findFavoritedGuesthouseIds(@Param("userId") Long userId,
 		@Param("guesthouseIds") Collection<Long> guesthouseIds);
+
+	void deleteByGuesthouseId(Long guesthouseId);
 }
