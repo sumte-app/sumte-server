@@ -102,9 +102,8 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservations.map(reservation -> {
 			boolean isComplete = reservation.getReservationStatus().equals(ReservationStatus.COMPLETED);
 
-			boolean reviewWritten = reviewRepository.existsByUserIdAndRoomGuesthouseId(
-					user.getId(), reservation.getRoom().getGuesthouse().getId()
-			);
+			boolean reviewWritten = reviewRepository.existsByUserIdAndReservationId(user.getId(), reservation.getId());
+
 			boolean canWriteReview = isComplete && !reviewWritten;
 
 			String firstImageUrl = imageRepository

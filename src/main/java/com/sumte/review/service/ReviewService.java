@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.sumte.apiPayload.code.error.ReservationErrorCode;
+import com.sumte.reservation.entity.Reservation;
+import com.sumte.reservation.repository.ReservationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,16 +39,21 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final UserRepository userRepository;
 	private final RoomRepository roomRepository;
+	private final ReservationRepository reservationRepository;
 	private final ImageRepository imageRepository;
 
 	@Transactional
 	public Long createReview(Long userId, ReviewRequestDto dto) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new SumteException(ReviewErrorCode.USER_NOT_FOUND));
-		Room room = roomRepository.findById(dto.getRoomId())
-			.orElseThrow(() -> new SumteException(ReviewErrorCode.ROOM_NOT_FOUND));
+		Reservation reservation = reservationRepository.findById(dto.getReservationId())
+				.orElseThrow(() -> new SumteException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 
-		Review review = ReviewConverter.toEntity(dto, user, room);
+		if (reviewRepository.existsByUserIdAndReservationId(userId, reservation.getId())) {
+			throw new SumteException(ReviewErrorCode.ALREADY_REVIEWED);
+		}
+
+		Review review = ReviewConverter.toEntity(dto, user, reservation);
 		Review saved = reviewRepository.save(review);
 		return saved.getId();
 	}

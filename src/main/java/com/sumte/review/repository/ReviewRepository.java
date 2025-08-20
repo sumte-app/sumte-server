@@ -32,5 +32,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	int countByGuesthouseId(@Param("guesthouseId") Long guesthouseId);
 	// int countByRoomGuesthouseId(Long guesthouseId);
 
-	boolean existsByUserIdAndRoomGuesthouseId(Long userId, Long roomGuesthouseId);
+	boolean existsByUserIdAndReservationId(Long userId, Long reservationId);
 }

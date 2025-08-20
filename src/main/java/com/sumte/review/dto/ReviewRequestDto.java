@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ReviewRequestDto {
 
-	@NotNull
-	private Long roomId;
+	private Long reservationId;
 
 	private String contents;
 
