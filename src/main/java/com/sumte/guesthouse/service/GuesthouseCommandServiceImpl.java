@@ -19,6 +19,7 @@ import com.sumte.guesthouse.repository.GuesthouseRepository;
 import com.sumte.guesthouse.repository.GuesthouseTargetAudienceRepository;
 import com.sumte.guesthouse.repository.OptionServicesRepository;
 import com.sumte.guesthouse.repository.TargetAudienceRepository;
+import com.sumte.user.repository.FavoriteRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	private final TargetAudienceRepository targetAudienceRepository;
 	private final GuesthouseTargetAudienceRepository guesthouseTargetAudienceRepository;
 	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
+	private final FavoriteRepository favoriteRepository;
 
 	@Override
 	public GuesthouseResponseDTO.Register registerGuesthouse(GuesthouseRequestDTO.Register dto) {
@@ -142,6 +144,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 		} else {
 			guesthouseOptionServicesRepository.deleteByGuesthouseId(guesthouseId);
 			guesthouseTargetAudienceRepository.deleteByGuesthouseId(guesthouseId);
+			favoriteRepository.deleteByGuesthouseId(guesthouseId);
 			guesthouseRepository.delete(guesthouse);
 			return GuesthouseResponseDTO.delete.builder()
 				.name(guesthouse.getName())
