@@ -59,11 +59,12 @@ public class GuesthouseController {
 				name = "Guesthouse Register Example",
 				value = """
 					{
-					  "name": "도심 속 게스트하우스",
-					  "description": "시장 도보 10분, 해수욕장 15분",
-					  "basePrice": 35000,
-					  "optionService": ["조식포함"],
-					  "targetAudience": ["남성전용"]
+					  "name": "필터링 될 게스트하우스",
+					  "addressRegion": "제주특별자치도",
+					  "addressDetail": "어쩌구길 12",
+					  "information": "시장 도보 10분, 해수욕장 도보 15분 거리",
+					  "optionServices": ["조식포함", "여성전용"],
+					  "targetAudience": ["애견동반"]
 					}
 					"""
 			)
