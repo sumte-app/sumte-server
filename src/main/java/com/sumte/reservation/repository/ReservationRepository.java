@@ -15,15 +15,19 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    @Query("""
-	SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
-	FROM Reservation r
-	WHERE r.room = :room
-	  AND r.startDate < :endDate
-	  AND r.endDate > :startDate""")
-    boolean existsOverlappingReservation(@Param("room") Room room,
-                                         @Param("startDate") LocalDate startDate,
-                                         @Param("endDate") LocalDate endDate);
+	@Query("""
+SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+FROM Reservation r
+JOIN Payment p ON p.reservation = r
+WHERE r.room = :room
+  AND r.reservationStatus <> com.sumte.reservation.entity.ReservationStatus.CANCELED
+  AND p.paymentStatus = com.sumte.payment.entity.PaymentStatus.PAID
+  AND r.startDate < :endDate
+  AND r.endDate   > :startDate
+""")
+	boolean existsOverlappingReservation(@Param("room") Room room,
+										 @Param("startDate") LocalDate startDate,
+										 @Param("endDate") LocalDate endDate);
 
 	List<Reservation> findByReservationStatusNot(ReservationStatus status);
 
