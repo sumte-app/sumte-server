@@ -151,6 +151,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	}
 
 	@Override
+	@Transactional
 	public GuesthouseResponseDTO.delete deleteGuesthouse(Long guesthouseId) {
 		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId).orElse(null);
 
@@ -188,6 +189,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 			}
 			// 6. reservation 삭제
 			reservationRepository.deleteByRoomId(roomId);
+			reviewRepository.deleteByRoomId(roomId);
 
 		}
 
