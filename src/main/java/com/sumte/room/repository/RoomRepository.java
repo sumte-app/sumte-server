@@ -26,4 +26,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	List<Room> findAllByGuesthouseId(Long guesthouseId);
 
 	long countByGuesthouseId(Long guesthouseId);
+
+	List<Room> findByGuesthouseId(Long guesthouseId);
 }
