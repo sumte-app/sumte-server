@@ -182,12 +182,12 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 				// 5. payment 삭제
 				paymentRepository.deleteByReservationId(reservationId);
 
-				// 6. reservation 삭제
-				reservationRepository.deleteByRoomId(roomId);
-			}
+				// 7. 리뷰 삭제
+				reviewRepository.deleteByReservationId(reservationId);
 
-			// 7. 리뷰 삭제
-			reviewRepository.deleteByRoomId(roomId);
+			}
+			// 6. reservation 삭제
+			reservationRepository.deleteByRoomId(roomId);
 
 		}
 
