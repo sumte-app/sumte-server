@@ -34,5 +34,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	boolean existsByUserIdAndReservationId(Long userId, Long reservationId);
 
-	void deleteByRoomId(Long roomId);
+	void deleteByReservationId(Long reservationId);
 }
