@@ -19,6 +19,15 @@ import com.sumte.guesthouse.repository.GuesthouseRepository;
 import com.sumte.guesthouse.repository.GuesthouseTargetAudienceRepository;
 import com.sumte.guesthouse.repository.OptionServicesRepository;
 import com.sumte.guesthouse.repository.TargetAudienceRepository;
+import com.sumte.payment.entity.Payment;
+import com.sumte.payment.repository.PaymentRepository;
+import com.sumte.payment.repository.PaymentTermsRepository;
+import com.sumte.payment.repository.RefundRepository;
+import com.sumte.reservation.entity.Reservation;
+import com.sumte.reservation.repository.ReservationRepository;
+import com.sumte.review.repository.ReviewRepository;
+import com.sumte.room.entity.Room;
+import com.sumte.room.repository.RoomRepository;
 import com.sumte.user.repository.FavoriteRepository;
 
 import jakarta.transaction.Transactional;
@@ -36,6 +45,12 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	private final GuesthouseTargetAudienceRepository guesthouseTargetAudienceRepository;
 	private final GuesthouseOptionServicesRepository guesthouseOptionServicesRepository;
 	private final FavoriteRepository favoriteRepository;
+	private final ReviewRepository reviewRepository;
+	private final ReservationRepository reservationRepository;
+	private final RoomRepository roomRepository;
+	private final PaymentRepository paymentRepository;
+	private final RefundRepository refundRepository;
+	private final PaymentTermsRepository paymentTermsRepository;
 
 	@Override
 	public GuesthouseResponseDTO.Register registerGuesthouse(GuesthouseRequestDTO.Register dto) {
@@ -141,17 +156,52 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 
 		if (guesthouse == null) {
 			throw new SumteException(CommonErrorCode.NOT_EXIST);
-		} else {
-			guesthouseOptionServicesRepository.deleteByGuesthouseId(guesthouseId);
-			guesthouseTargetAudienceRepository.deleteByGuesthouseId(guesthouseId);
-			favoriteRepository.deleteByGuesthouseId(guesthouseId);
-			guesthouseRepository.delete(guesthouse);
-			return GuesthouseResponseDTO.delete.builder()
-				.name(guesthouse.getName())
-				.addressDetail(guesthouse.getAddressDetail())
-				.build();
 		}
 
+		// 1. guesthouse 하위 room 리스트 조회
+		List<Room> rooms = roomRepository.findByGuesthouseId(guesthouseId);
+
+		for (Room room : rooms) {
+			Long roomId = room.getId();
+
+			// 2. 해당 room의 reservation 조회
+			List<Reservation> reservations = reservationRepository.findByRoomId(roomId);
+			for (Reservation reservation : reservations) {
+				Long reservationId = reservation.getId();
+
+				// 3. reservation의 payment 조회
+				List<Payment> payments = paymentRepository.findByReservationId(reservationId);
+				for (Payment payment : payments) {
+					Long paymentId = payment.getId();
+
+					// 4. paymentTerms, refund 먼저 삭제
+					paymentTermsRepository.deleteByPaymentId(paymentId);
+					refundRepository.deleteByPaymentId(paymentId);
+				}
+
+				// 5. payment 삭제
+				paymentRepository.deleteByReservationId(reservationId);
+
+				// 6. reservation 삭제
+				reservationRepository.deleteByRoomId(roomId);
+			}
+
+			// 7. 리뷰 삭제
+			reviewRepository.deleteByRoomId(roomId);
+
+		}
+
+		// 9. Guesthouse 관련 연관 테이블 삭제
+		guesthouseOptionServicesRepository.deleteByGuesthouseId(guesthouseId);
+		guesthouseTargetAudienceRepository.deleteByGuesthouseId(guesthouseId);
+		favoriteRepository.deleteByGuesthouseId(guesthouseId);
+
+		// 11. Guesthouse 삭제 (room은 cascade로 같이 삭제됨)
+		guesthouseRepository.delete(guesthouse);
+		return GuesthouseResponseDTO.delete.builder()
+			.name(guesthouse.getName())
+			.addressDetail(guesthouse.getAddressDetail())
+			.build();
 	}
 
 	@Override

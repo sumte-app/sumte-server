@@ -2,8 +2,8 @@ package com.sumte.payment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sumte.payment.entity.Refund;
+import com.sumte.payment.entity.PaymentTerms;
 
-public interface RefundRepository extends JpaRepository<Refund, Long> {
+public interface PaymentTermsRepository extends JpaRepository<PaymentTerms, Long> {
 	void deleteByPaymentId(Long paymentId);
 }
