@@ -53,6 +53,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	private final PaymentTermsRepository paymentTermsRepository;
 
 	@Override
+	@Transactional
 	public GuesthouseResponseDTO.Register registerGuesthouse(GuesthouseRequestDTO.Register dto) {
 		Guesthouse guesthouse = guesthouseConverter.toRegisterEntity(dto);
 
@@ -151,6 +152,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 	}
 
 	@Override
+	@Transactional
 	public GuesthouseResponseDTO.delete deleteGuesthouse(Long guesthouseId) {
 		Guesthouse guesthouse = guesthouseRepository.findById(guesthouseId).orElse(null);
 
@@ -187,6 +189,7 @@ public class GuesthouseCommandServiceImpl implements GuesthouseCommandService {
 
 			}
 			// 6. reservation 삭제
+			reviewRepository.deleteByRoomId(roomId);
 			reservationRepository.deleteByRoomId(roomId);
 
 		}
