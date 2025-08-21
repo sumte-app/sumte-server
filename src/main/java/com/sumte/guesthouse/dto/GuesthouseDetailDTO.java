@@ -19,6 +19,7 @@ public class GuesthouseDetailDTO {
 	private String name;
 	private Long reviewCount;
 	private Double averageScore;
+	private Long maxPeople;
 	private String addressRegion;
 	private String addressDetail;
 	private String information;

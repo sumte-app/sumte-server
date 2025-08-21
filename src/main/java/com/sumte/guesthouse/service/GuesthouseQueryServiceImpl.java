@@ -74,6 +74,7 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 		// 4) 각 Room 정보 + 첫 번째 이미지
 		List<Room> rooms = gh.getRooms();
 		List<Long> roomIds = rooms.stream().map(Room::getId).toList();
+		Long maxPeople = rooms.stream().mapToLong(Room::getTotalCount).max().orElse(0);
 
 		// 4-a) 객실 이미지 일괄 조회
 		List<Image> roomImages = imageRepository
@@ -119,6 +120,7 @@ public class GuesthouseQueryServiceImpl implements GuesthouseQueryService {
 			)
 			.addressRegion(gh.getAddressRegion())
 			.addressDetail(gh.getAddressDetail())
+			.maxPeople(maxPeople)
 			.information(gh.getInformation())
 			.advertisement(gh.getAdvertisement())
 			.optionServices(optionServices)
