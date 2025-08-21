@@ -156,23 +156,6 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			}
 		}
 
-		// if (dto.getOptionService() != null && !dto.getOptionService().isEmpty()) {
-		// 	condition.and(guesthouse.id.in(
-		// 		JPAExpressions.select(guesthouseOptionServices.guesthouse.id)
-		// 			.from(guesthouseOptionServices)
-		// 			.join(guesthouseOptionServices.optionServices, optionService)
-		// 			.where(optionService.name.in(dto.getOptionService()))
-		// 	));
-		// }
-		//
-		// if (dto.getTargetAudience() != null && !dto.getTargetAudience().isEmpty()) {
-		// 	condition.and(guesthouse.id.in(
-		// 		JPAExpressions.select(guesthouseTargetAudience.guesthouse.id)
-		// 			.from(guesthouseTargetAudience)
-		// 			.join(guesthouseTargetAudience.targetAudience, targetAudience)
-		// 			.where(targetAudience.name.in(dto.getTargetAudience()))
-		// 	));
-		// }
 		if (dto.getOptionService() != null && !dto.getOptionService().isEmpty()) {
 			for (String svc : dto.getOptionService()) {
 				condition.and(
