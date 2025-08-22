@@ -97,6 +97,8 @@ public class GuesthouseRepositoryImpl implements GuesthouseRepositoryCustom {
 			);
 
 			roomFilter.and(reservationCondition);
+		} else {
+			roomFilter.and(room.totalCount.goe(dto.getPeople()));
 		}
 
 		if (dto.getMinPrice() != null && dto.getMaxPrice() != null) {
